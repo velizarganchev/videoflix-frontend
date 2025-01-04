@@ -1,8 +1,97 @@
+@import '../../../styles.scss';
+
 .signup-container {
     height: 100vh;
-    background-image: linear-gradient(rgba(20, 20, 20, 0.6) 0%,
-            rgba(20, 20, 20, 1) 100%), url('/assets/images/signup.jpg');
+    background-image: linear-gradient(rgba(20, 20, 20, 0.6) 0%, rgba(20, 20, 20, 1) 100%), url('/assets/images/signup.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .signup-form-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        padding: 2.6rem 3.5rem;
+        background-color: white;
+        border-radius: 48px;
+
+        h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: 700;
+            color: $purple;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+
+            .input-container {
+                width: 100%;
+                padding: 0.75rem 1.5rem;
+                border: 1px solid $purple;
+                border-radius: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                input {
+                    width: inherit;
+                    height: 2rem;
+                    color: $purple;
+                    font-size: 1.2rem;
+                    border: none;
+
+                    &:focus,
+                    &:active {
+                        outline: none;
+                        border-color: $purple;
+                    }
+
+                    &::placeholder {
+                        color: $purple;
+                    }
+                }
+
+                >button {
+                    background-color: transparent;
+                    border: none;
+                    color: $purple;
+                    font-size: 1.2rem;
+                    width: 2rem;
+                    height: 2rem;
+
+                }
+
+                i {
+                    color: $purple;
+                    display: inline-block;
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    text-align: center;
+                }
+            }
+
+            >button {
+                color: white;
+                background-color: $purple;
+                padding: 0.75rem 1.5rem;
+                border-radius: 12px;
+                font-size: 1.2rem;
+                transition: background-color 0.3s;
+
+                &:hover {
+                    background-color: darken($purple, 15%);
+                }
+            }
+        }
+    }
 }
