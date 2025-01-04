@@ -1,0 +1,33 @@
+@import '../../../styles.scss';
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: transparent;
+    height: 4.6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .footer-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 3rem;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 500;
+        text-decoration: none;
+
+        a {
+            color: white;
+            text-decoration: none;
+
+            &:hover {
+                color: $purple;
+            }
+        }
+    }
+}
