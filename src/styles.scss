@@ -1,6 +1,7 @@
 @import "./fonts.scss";
 
 $purple: #2E3EDF;
+$purple-light: #2E3EDF80;
 
 html,
 body {
@@ -49,5 +50,10 @@ button {
 
     &:hover {
         cursor: pointer;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 }
