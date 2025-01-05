@@ -3,17 +3,11 @@
 $purple: #2E3EDF;
 $purple-light: #2E3EDF80;
 
-html,
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'DM Sans', sans-serif;
-}
-
 @mixin scrollbar() {
     &::-webkit-scrollbar {
         width: 14px;
         height: 18px;
+        background-color: #141414;
     }
 
     &::-webkit-scrollbar-thumb {
@@ -41,6 +35,14 @@ body {
         background-color: transparent;
     }
 
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'DM Sans', sans-serif;
+    @include scrollbar();
 }
 
 button {

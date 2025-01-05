@@ -1,0 +1,147 @@
+@import "../../../styles.scss";
+
+.main-content-container {
+    position: relative;
+    background: linear-gradient(#141414 0%,
+            rgba(20, 20, 20, 0.6) 60%,
+            rgba(20, 20, 20, 1) 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    overflow-y: hidden;
+
+    .video-preview-container {
+        position: relative;
+
+        .bg-video {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+        }
+
+        .video-preview-info {
+            display: flex;
+            flex-direction: column;
+
+            gap: 2rem;
+            width: 27rem;
+            color: white;
+            position: absolute;
+            top: 20%;
+            left: 5%;
+
+            h1 {
+                font-size: 5.5rem;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            .video-preview-info-text {
+                font-size: 1rem;
+                font-weight: 400;
+            }
+
+            button {
+                color: white;
+                width: fit-content;
+                background-color: $purple;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 0.25rem;
+
+                &:hover {
+                    background-color: darken($purple, 15%);
+                    border: 1px solid white;
+                }
+            }
+
+        }
+    }
+
+    .main-video-content {
+        overflow: hidden;
+
+        .video-content-category-container {
+            margin: 2rem 0;
+            
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+                color: white;
+                margin-left: 5%;
+            }
+
+            .video-content-category {
+                position: relative;
+                display: flex;
+                align-items: center;
+
+                .arrowLeft,
+                .arrowRight {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 10;
+
+                    button {
+                        background-color: rgba(0, 0, 0, 0.5);
+                        border: none;
+                        border-radius: 50%;
+                        width: 50px;
+                        height: 50px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        cursor: pointer;
+                        transition: background-color 0.3s ease;
+
+                        &:hover {
+                            background-color: rgba(0, 0, 0, 0.8);
+                        }
+
+                        i {
+                            color: white;
+                            font-size: 2rem;
+                        }
+                    }
+                }
+
+                .arrowLeft {
+                    left: 20px;
+                }
+
+                .arrowRight {
+                    right: 20px;
+                }
+
+                .video-content-category-scroll {
+                    display: flex;
+                    gap: 1rem;
+                    overflow-x: auto;
+                    scroll-behavior: smooth;
+                    padding: 0 60px;
+
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    a {
+                        flex: 0 0 auto;
+                        width: 13.2rem;
+
+                        img {
+                            width: 100%;
+                            height: auto;
+                            border-radius: 8px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}

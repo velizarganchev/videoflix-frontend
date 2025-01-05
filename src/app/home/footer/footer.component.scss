@@ -1,15 +1,13 @@
 @import '../../../styles.scss';
 
 footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
     width: 100%;
     background-color: transparent;
     height: 4.6rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #141414;
 
     .footer-links {
         display: flex;
