@@ -15,6 +15,7 @@ export class SignupComponent {
 
   showPassword = false;
   showConfirmPassword = false;
+  error = false;
 
 
   ngOnInit() {

@@ -5,6 +5,12 @@
             <div class="input-container">
                 <input type="email" placeholder="Email Address">
             </div>
+            @if (error) {
+            <p>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Email is invalid.
+            </p>
+            }
             <div class="input-container">
                 <input [type]="showPassword ? 'text' : 'password'" placeholder="Enter a Password">
                 <button type="button" (click)="togglePasswordVisibility('password')">
@@ -15,6 +21,12 @@
                     }
                 </button>
             </div>
+            @if (error) {
+            <p>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Password is invalid.
+            </p>
+            }
             <div class="input-container">
                 <input [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm Password">
                 <button type="button" (click)="togglePasswordVisibility('confirmPassword')">
@@ -25,6 +37,12 @@
                     }
                 </button>
             </div>
+            @if (error) {
+            <p>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Passwords must match.
+            </p>
+            }
             <button>Get Started</button>
         </form>
     </div>
