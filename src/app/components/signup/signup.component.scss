@@ -103,5 +103,17 @@
                 }
             }
         }
+
+        .signup-form-feedback {
+            width: 100%;
+            text-align: justify;
+            font-size: 1.3rem;
+            color: $purple;
+        }
+
+        .signup-form-feedback-icon-container {
+            color: $purple-light;
+            font-size: 12rem;
+        }
     }
 }
