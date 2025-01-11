@@ -1,17 +1,41 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, effect, EventEmitter, input, OnInit, Output } from '@angular/core';
+import { Video } from '../../models/video.class';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-video-item',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './video-item.component.html',
   styleUrl: './video-item.component.scss'
 })
 export class VideoItemComponent {
-  @Output() videoClick = new EventEmitter<number>();
+  video = input<Video>();
+  @Output() closeVideoClick = new EventEmitter<boolean>();
 
-  handleBackClick(videoId: number) {
-    this.videoClick.emit(videoId);
+  constructor() {
+    effect(() => {
+      console.log('VideoItemComponent');
+      console.log(this.video());
+    });
   }
 
+  handleBackClick(closeVideo: boolean) {
+    this.closeVideoClick.emit(closeVideo);
+  }
+
+  getImageUrl(): string {
+    const video = this.video();
+    if (video && video.image_file) {
+      return `http://127.0.0.1:8000${video.image_file}`;
+    }
+    return '';
+  }
+
+  getVideoUrl(index: number): string | null {
+    const video = this.video();
+    return video?.converted_files?.[index]
+      ? `http://127.0.0.1:8000${video.converted_files[index]}`
+      : null;
+  }
 }

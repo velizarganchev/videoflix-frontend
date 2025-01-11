@@ -1,6 +1,6 @@
 <section class="main-content-container">
-    @if (showVideo) {
-    <app-video-item (videoClick)="handleVideoClick($event)" />
+    @if (showVideo()) {
+    <app-video-item [video]="videoToPlay()" (closeVideoClick)="showVideo.set($event)" />
     }
     <div class="main-content-header">
         <div class="video-preview-container">
@@ -38,33 +38,11 @@
                     </button>
                 </div>
                 <div class="video-content-category-scroll" #scrollContainer>
-                    <div class="video-content-item" (click)="handleVideoClick(1)">
-                        <img src="/assets/images/48-hours.jpg" alt="Video">
+                    @for (video of videos(); track $index) {
+                    <div class="video-content-item" (click)="handleVideoClick(true, video)">
+                        <img [src]="'http://127.0.0.1:8000/' + video.image_file" alt="Video">
                     </div>
-                    <div class="video-content-item" (click)="handleVideoClick(2)">
-                        <img src="/assets/images/shadows.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(3)">
-                        <img src="/assets/images/whales.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(4)">
-                        <img src="/assets/images/world-of.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(5)">
-                        <img src="/assets/images/48-hours.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(6)">
-                        <img src="/assets/images/48-hours.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(7)">
-                        <img src="/assets/images/48-hours.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(8)">
-                        <img src="/assets/images/48-hours.jpg" alt="Video">
-                    </div>
-                    <div class="video-content-item" (click)="handleVideoClick(9)">
-                        <img src="/assets/images/48-hours.jpg" alt="Video">
-                    </div>
+                    }
                 </div>
                 <div class="arrowRight">
                     <button (click)="scrollRight()">

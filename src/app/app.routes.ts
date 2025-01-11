@@ -11,7 +11,7 @@ export const routes: Routes = [
     {
         path: '',
         pathMatch: 'full',
-        component: HomeComponent
+        redirectTo: 'start-site'
     },
     {
         path: '',
