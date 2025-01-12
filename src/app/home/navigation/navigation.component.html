@@ -1,10 +1,23 @@
 <section>
     <nav>
         <div class="logo">
-            <a routerLink="/start-site">
+            <a href="/main-content">
+                @if(!authService.currentUser()) {
                 <img src="assets/images/logo.png" alt="logo" />
+                }@else {
+                <img src="assets/images/icon-logo.png" alt="logo" />
+                }
             </a>
         </div>
+        @if (router.url != '/login') {
+        @if (authService.currentUser()) {
+        <button type="button" class="logout-btn" (click)="onLogout()">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            Log Out
+        </button>
+        }@else {
         <button routerLink="/login" class="login-btn">Log in</button>
+        }
+        }
     </nav>
 </section>

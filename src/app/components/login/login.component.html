@@ -1,18 +1,13 @@
 <section class="login-container">
     <div class="login-form-container">
         <h1>Log in</h1>
-        <form action="">
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
             <div class="input-container">
-                <input type="email" placeholder="Email Address">
+                <input type="email" name="email" ngModel required email #email="ngModel" placeholder="Email Address">
             </div>
-            @if (error) {
-            <p>
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Email is invalid.
-            </p>
-            }
             <div class="input-container">
-                <input [type]="showPassword ? 'text' : 'password'" placeholder="Enter a Password">
+                <input [type]="showPassword() ? 'text' : 'password'" name="password" ngModel required minlength="6"
+                    #password="ngModel" placeholder="Enter a Password">
                 <button type="button" (click)="togglePasswordVisibility('password')">
                     @if (!showPassword){
                     <i class="fa-solid fa-eye-slash"></i>
@@ -21,17 +16,21 @@
                     }
                 </button>
             </div>
-            @if (error) {
+            @if (loginForm.form.invalid && email.touched &&
+            password.touched) {
             <p>
                 <i class="fa-solid fa-triangle-exclamation"></i>
-                Password is invalid.
+                Email or Password is invalid.
             </p>
+            }@else {
+            <p></p>
             }
+
             <div class="remember-me-container">
-                <input type="checkbox" id="remember-me">
+                <input type="checkbox" id="remember-me" [(ngModel)]="rememberMe" name="rememberMe">
                 <label for="remember-me">Remember me</label>
             </div>
-            <button disabled>Log in</button>
+            <button type="submit" [disabled]="loginForm.form.invalid">Log in</button>
             <div class="login-links-container">
                 <div class="link-container">
                     <a routerLink="/forgot-password">Forgot Password?</a>

@@ -1,4 +1,4 @@
-import { Component, effect, EventEmitter, input, OnInit, Output } from '@angular/core';
+import { Component, effect, input, output } from '@angular/core';
 import { Video } from '../../models/video.class';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 })
 export class VideoItemComponent {
   video = input<Video>();
-  @Output() closeVideoClick = new EventEmitter<boolean>();
+  closeVideoClick = output<boolean>();
 
   constructor() {
     effect(() => {

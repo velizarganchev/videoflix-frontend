@@ -11,10 +11,10 @@ export class VideoService {
   private videos = signal<Video[] | undefined>([]);
   loadedVideos = this.videos.asReadonly();
 
-  http = inject(HttpClient);
-  errorService = inject(ErrorService);
+  private http = inject(HttpClient);
+  private errorService = inject(ErrorService);
 
-  httpHeaders: HttpHeaders = new HttpHeaders({
+  private httpHeaders: HttpHeaders = new HttpHeaders({
     Authorization: 'Token ' + 'b0ab83d0c8f08d29f22371c9d979d487a9efcc14'
   });
 

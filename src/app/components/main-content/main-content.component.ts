@@ -15,10 +15,12 @@ export class MainContentComponent implements OnInit {
 
   showVideo = signal<boolean>(false);
   isFetching = signal<boolean>(false);
+  videoToPlay = signal<Video | undefined>(undefined);
+
   videosService = inject(VideoService);
   destroyRef = inject(DestroyRef);
+
   videos = this.videosService.loadedVideos;
-  videoToPlay = signal<Video | undefined>(undefined);
 
   ngOnInit(): void {
     this.isFetching.set(true);
@@ -49,22 +51,4 @@ export class MainContentComponent implements OnInit {
     this.videoToPlay.set(video);
     this.showVideo.set(!this.showVideo());
   }
-
-  // @ViewChildren('videoPosition') videoPositions!: QueryList<ElementRef>;
-
-  // videoBoxes = [
-  //     { videos: [/* Daten für VideoBox 1 */] },
-  //     { videos: [/* Daten für VideoBox 2 */] },
-  //     { videos: [/* Daten für VideoBox 3 */] },
-  // ];
-
-  // scrollRight(index: number): void {
-  //     const videoPosition = this.videoPositions.toArray()[index];
-  //     videoPosition.nativeElement.scrollBy({ left: 300, behavior: 'smooth' });
-  // }
-
-  // scrollLeft(index: number): void {
-  //     const videoPosition = this.videoPositions.toArray()[index];
-  //     videoPosition.nativeElement.scrollBy({ left: -300, behavior: 'smooth' });
-  // }
 }
