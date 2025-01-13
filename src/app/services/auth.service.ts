@@ -5,7 +5,7 @@ import { ErrorService } from './error.service';
 import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private user = signal<User | null>(null);
@@ -13,20 +13,20 @@ export class AuthService {
 
   private http = inject(HttpClient);
   private httpHeaders = new HttpHeaders({
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   });
 
   private errorService = inject(ErrorService);
   private router = inject(Router);
 
   autoLogin() {
-    const user = localStorage.getItem('user') || localStorage.getItem('rememberMe');
+    const user =
+      localStorage.getItem('user') || localStorage.getItem('rememberMe');
     if (user) {
       const loadedUser = new User(JSON.parse(user));
       this.user.set(loadedUser);
     }
   }
-
 
   // autoLogout(expirationDuration: number) {
   //   setTimeout(() => {
@@ -40,11 +40,20 @@ export class AuthService {
         next: (user) => {
           this.user.set(user);
           localStorage.setItem('user', JSON.stringify(user));
-        }
+        },
       })
     );
   }
 
+  signup(email: string, password: string) {
+    return this.createUser(email, password).pipe(
+      tap({
+        next: (response) => {
+          console.log(response);
+        },
+      })
+    );
+  }
 
   logout() {
     this.user.set(null);
@@ -52,13 +61,33 @@ export class AuthService {
     localStorage.removeItem('user');
   }
 
-
   private fetchUser(email: string, password: string) {
-    return this.http.post<User>('http://127.0.0.1:8000/api/users/login/', { email, password }, { headers: this.httpHeaders }).pipe(
-      catchError((error) => {
-        this.errorService.showError('Failed to login');
-        return throwError(() => new Error('Failed to login'));
-      })
-    );
+    return this.http
+      .post<User>(
+        'http://127.0.0.1:8000/api/users/login/',
+        { email, password },
+        { headers: this.httpHeaders }
+      )
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to login');
+          return throwError(() => new Error('Failed to login'));
+        })
+      );
   }
-} 
+
+  private createUser(email: string, password: string) {
+    return this.http
+      .post<User>(
+        'http://127.0.0.1:8000/api/users/login/',
+        { email, password },
+        { headers: this.httpHeaders }
+      )
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to create user');
+          return throwError(() => new Error('Failed to create user'));
+        })
+      );
+  }
+}
