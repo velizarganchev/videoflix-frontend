@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
+  private userEmails = signal<[]>([]);
+  allUserEmails = this.userEmails.asReadonly();
+
   private user = signal<User | null>(null);
   currentUser = this.user.asReadonly();
 
@@ -15,9 +18,29 @@ export class AuthService {
   private httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
   });
-
   private errorService = inject(ErrorService);
   private router = inject(Router);
+
+  loadUserEmails() {
+    return this.fetchAllUserEmails().pipe(
+      tap({
+        next: (emails) => {
+          this.userEmails.set(emails);
+        },
+      }),
+    );
+  }
+
+  fetchAllUserEmails() {
+    // this.httpHeaders.append('Authorization', `Token ${this.currentUser()?.token}`);
+    return this.http
+      .get<[]>('http://127.0.0.1:8000/api/users/profiles/', { headers: this.httpHeaders }).pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to fetch user emails');
+          return throwError(() => new Error('Failed to fetch user emails'));
+        })
+      );
+  }
 
   autoLogin() {
     const user =
