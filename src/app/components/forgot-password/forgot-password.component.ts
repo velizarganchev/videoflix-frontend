@@ -5,7 +5,6 @@ import { of } from 'rxjs';
 import { CheckEmailComponent } from "../../shared/check-email/check-email.component";
 import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
 
-
 function validateEmail(allEmails: string[]) {
   return (control: AbstractControl) => {
     const email = control.value;

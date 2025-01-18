@@ -81,8 +81,6 @@ export class SignupComponent implements OnInit {
     ),
   });
 
-
-
   ngOnInit(): void {
     const subscription = this.authService.loadUserEmails().subscribe();
 
