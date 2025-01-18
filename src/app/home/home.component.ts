@@ -16,9 +16,9 @@ export class HomeComponent implements OnInit {
   router = inject(Router);
 
   ngOnInit(): void {
-    this.authService.autoLogin();
-    if (!this.authService.currentUser()) {
-      this.router.navigate(['/login']);
-    }
+    // this.authService.autoLogin();
+    // if (!this.authService.currentUser()) {
+    //   this.router.navigate(['/login']);
+    // }
   }
 }

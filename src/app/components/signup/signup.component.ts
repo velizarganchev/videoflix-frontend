@@ -10,7 +10,6 @@ import { AuthService } from '../../services/auth.service';
 import { of } from 'rxjs';
 import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
 import { SuccessfulRegisterComponent } from "../successful-register/successful-register.component";
-import { User } from '../../models/user.class';
 
 function emailValidator(allEmails: string[]) {
   return (control: AbstractControl) => {
@@ -85,7 +84,11 @@ export class SignupComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.authService.loadUserEmails().subscribe();
+    const subscription = this.authService.loadUserEmails().subscribe();
+
+    this.destroyRef.onDestroy(() => {
+      subscription.unsubscribe();
+    });
   }
 
   togglePasswordVisibility(field: string) {

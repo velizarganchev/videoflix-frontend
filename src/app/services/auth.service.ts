@@ -80,6 +80,10 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string) {
+    return this.forgotPasswordUser(email);
+  }
+
   logout() {
     this.user.set(null);
     this.router.navigate(['/login']);
@@ -95,7 +99,7 @@ export class AuthService {
       )
       .pipe(
         catchError((error) => {
-          this.errorService.showError('Invalid email or password');
+          this.errorService.showError('Invalid email or password!');
           return throwError(() => new Error('Failed to fetch user'));
         })
       );
@@ -114,5 +118,16 @@ export class AuthService {
           return throwError(() => new Error('Failed to create user'));
         })
       );
+  }
+
+  private forgotPasswordUser(email: string) {
+    return this.http.post(`${BASE_URL}/users/forgot-password/`, { email }, { headers: this.httpHeaders }).pipe(
+      catchError((error) => {
+        this.errorService.showError('Failed to send password reset email');
+        return throwError(() => new Error('Failed to send password reset email'));
+      })
+    );
+
+
   }
 }

@@ -9,7 +9,7 @@ import { ErrorService } from '../../services/error.service';
   styleUrl: './error-toast.component.scss'
 })
 export class ErrorToastComponent {
-  private errorService = inject(ErrorService);
+  errorService = inject(ErrorService);
 
   closeToast() {
     this.errorService.clearError();
