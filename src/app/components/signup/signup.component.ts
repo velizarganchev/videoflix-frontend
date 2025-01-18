@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -8,6 +8,9 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { of } from 'rxjs';
+import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
+import { SuccessfulRegisterComponent } from "../successful-register/successful-register.component";
+import { User } from '../../models/user.class';
 
 function emailValidator(allEmails: string[]) {
   return (control: AbstractControl) => {
@@ -37,16 +40,25 @@ function equalValuesValidator(controlOne: string, controlTwo: string) {
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, LoadingSpinnerComponent, SuccessfulRegisterComponent],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
 
 export class SignupComponent implements OnInit {
-  authService = inject(AuthService);
+  public authService = inject(AuthService);
+  destroyRef = inject(DestroyRef);
 
-  showPassword = false;
-  showConfirmPassword = false;
+  isSingupLoading = signal<boolean>(false);
+  successFullSignup = signal<boolean>(false);
+  showPassword = signal<boolean>(false);
+  showConfirmPassword = signal<boolean>(false);
+
+  userData = signal<{
+    email: string;
+    username: string;
+  }>({ email: '', username: '' });
+
   allEmails = this.authService.allUserEmails;
 
   signupForm = new FormGroup({
@@ -78,13 +90,39 @@ export class SignupComponent implements OnInit {
 
   togglePasswordVisibility(field: string) {
     if (field === 'password') {
-      this.showPassword = !this.showPassword;
+      this.showPassword.set(!this.showPassword());
     } else if (field === 'confirmPassword') {
-      this.showConfirmPassword = !this.showConfirmPassword;
+      this.showConfirmPassword.set(!this.showConfirmPassword());
     }
   }
 
   onSubmit() {
-    console.log(this.signupForm.value);
+    if (this.signupForm.valid) {
+      this.isSingupLoading.set(true);
+      const email = this.signupForm.get('email')?.value;
+      const password = this.signupForm.get('passwords.password')?.value;
+      const confirmPassword = this.signupForm.get('passwords.confirmPassword')?.value;
+
+      const subscription = this.authService.signup(email!, password!, confirmPassword!).subscribe({
+        next: (user) => {
+          console.log('User signed up successfully');
+          this.userData.set({
+            email: user.email,
+            username: user.email.split('@')[0],
+          });
+        },
+        error: (error) => {
+          console.error('Error signing up:', error);
+        },
+        complete: () => {
+          this.isSingupLoading.set(false);
+          this.successFullSignup.set(true);
+        },
+      });
+
+      this.destroyRef.onDestroy(() => {
+        subscription.unsubscribe();
+      });
+    }
   }
 }

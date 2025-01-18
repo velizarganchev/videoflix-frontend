@@ -4,6 +4,8 @@ import { User } from '../models/user.class';
 import { ErrorService } from './error.service';
 import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+
+const BASE_URL = 'http://127.0.0.1:8000/api';
 @Injectable({
   providedIn: 'root',
 })
@@ -34,7 +36,7 @@ export class AuthService {
   fetchAllUserEmails() {
     // this.httpHeaders.append('Authorization', `Token ${this.currentUser()?.token}`);
     return this.http
-      .get<[]>('http://127.0.0.1:8000/api/users/profiles/', { headers: this.httpHeaders }).pipe(
+      .get<[]>(`${BASE_URL}/users/profiles/`, { headers: this.httpHeaders }).pipe(
         catchError((error) => {
           this.errorService.showError('Failed to fetch user emails');
           return throwError(() => new Error('Failed to fetch user emails'));
@@ -68,11 +70,11 @@ export class AuthService {
     );
   }
 
-  signup(email: string, password: string) {
-    return this.createUser(email, password).pipe(
+  signup(email: string, password: string, confirmPassword: string) {
+    return this.createUser(email, password, confirmPassword).pipe(
       tap({
-        next: (response) => {
-          console.log(response);
+        next: (user) => {
+          this.user.set(user);
         },
       })
     );
@@ -87,7 +89,7 @@ export class AuthService {
   private fetchUser(email: string, password: string) {
     return this.http
       .post<User>(
-        'http://127.0.0.1:8000/api/users/login/',
+        `${BASE_URL}/users/login/`,
         { email, password },
         { headers: this.httpHeaders }
       )
@@ -99,11 +101,11 @@ export class AuthService {
       );
   }
 
-  private createUser(email: string, password: string) {
+  private createUser(email: string, password: string, confirm_password: string) {
     return this.http
       .post<User>(
-        'http://127.0.0.1:8000/api/users/login/',
-        { email, password },
+        `${BASE_URL}/users/register/`,
+        { email, password, confirm_password },
         { headers: this.httpHeaders }
       )
       .pipe(
