@@ -9,7 +9,7 @@
                 <input [type]="showPassword() ? 'text' : 'password'" name="password" ngModel required minlength="6"
                     #password="ngModel" placeholder="Enter a Password">
                 <button type="button" (click)="togglePasswordVisibility('password')">
-                    @if (!showPassword){
+                    @if (!showPassword()){
                     <i class="fa-solid fa-eye-slash"></i>
                     }@else {
                     <i class="fa-regular fa-eye"></i>

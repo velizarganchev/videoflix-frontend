@@ -1,3 +1,6 @@
 <main class="page-wrapper">
     <router-outlet></router-outlet>
+    @if (errorServise.error()) {
+    <app-error-toast />
+    }
 </main>

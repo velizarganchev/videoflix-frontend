@@ -95,8 +95,8 @@ export class AuthService {
       )
       .pipe(
         catchError((error) => {
-          this.errorService.showError('Failed to login');
-          return throwError(() => new Error('Failed to login'));
+          this.errorService.showError('Invalid email or password');
+          return throwError(() => new Error('Failed to fetch user'));
         })
       );
   }

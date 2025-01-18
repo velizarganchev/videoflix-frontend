@@ -1,0 +1,52 @@
+@import '../../../styles.scss';
+
+:host {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    color: white;
+
+    .toast-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background-color: $purple;
+        border: none;
+        border-radius: 20px;
+        padding: 0.3rem 2rem;
+        border-left: 1.5rem solid red;
+
+        i {
+            font-size: 1.5rem;
+        }
+
+        p {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 400;
+
+            &::after {
+                content: '';
+                display: block;
+                width: 2px;
+                height: 1.3rem;
+                background-color: white;
+            }
+        }
+
+        .close-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            >i {
+                font-size: 1rem;
+            }
+        }
+    }
+}

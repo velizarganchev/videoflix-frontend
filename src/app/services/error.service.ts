@@ -9,8 +9,10 @@ export class ErrorService {
   error = this._error.asReadonly();
 
   showError(message: string) {
-    console.log(message);
     this._error.set(message);
+    setTimeout(() => {
+      this.clearError();
+    }, 3000);
   }
 
   clearError() {
