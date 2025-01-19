@@ -71,13 +71,7 @@ export class AuthService {
   }
 
   signup(email: string, password: string, confirmPassword: string) {
-    return this.createUser(email, password, confirmPassword).pipe(
-      tap({
-        next: (user) => {
-          this.user.set(user);
-        },
-      })
-    );
+    return this.createUser(email, password, confirmPassword);
   }
 
   forgotPassword(email: string) {

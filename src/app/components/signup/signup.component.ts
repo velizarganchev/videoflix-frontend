@@ -9,7 +9,7 @@ import {
 import { AuthService } from '../../services/auth.service';
 import { of } from 'rxjs';
 import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
-import { SuccessfulRegisterComponent } from "../successful-register/successful-register.component";
+import { SuccessfulRegisterComponent } from "../../shared/successful-register/successful-register.component";
 
 function emailValidator(allEmails: string[]) {
   return (control: AbstractControl) => {
