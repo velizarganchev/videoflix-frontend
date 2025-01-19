@@ -84,6 +84,10 @@ export class AuthService {
     return this.forgotPasswordUser(email);
   }
 
+  resetPassword(uid: string, token: string, newPassword: string) {
+    return this.resetPasswordUser(uid, token, newPassword);
+  }
+
   logout() {
     this.user.set(null);
     this.router.navigate(['/login']);
@@ -127,7 +131,14 @@ export class AuthService {
         return throwError(() => new Error('Failed to send password reset email'));
       })
     );
+  }
 
-
+  private resetPasswordUser(uid: string, token: string, new_password: string) {
+    return this.http.post(`${BASE_URL}/users/reset-password/`, { uid, token, new_password }, { headers: this.httpHeaders }).pipe(
+      catchError((error) => {
+        this.errorService.showError('Failed to reset password');
+        return throwError(() => new Error('Failed to reset password'));
+      })
+    );
   }
 }
