@@ -23,6 +23,16 @@ export class AuthService {
   private errorService = inject(ErrorService);
   private router = inject(Router);
 
+  getUser(): User | null {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+
+  isLoggedIn(): boolean {
+    const user = this.getUser();
+    return !!(user && user.token);
+  }
+
   loadUserEmails() {
     return this.fetchAllUserEmails().pipe(
       tap({

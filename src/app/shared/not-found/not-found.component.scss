@@ -1,0 +1,98 @@
+@import '../../../styles.scss';
+
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 4.6rem);
+
+    .not-found-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        animation: fadeIn 0.8s ease-in-out;
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            animation: bounce 1.5s infinite;
+        }
+
+        .error-message {
+            margin-top: 1rem;
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            p {
+                font-size: 1rem;
+                line-height: 1.5;
+
+                a {
+                    color: $purple;
+                    text-decoration: underline;
+                    font-weight: bold;
+                    transition: color 0.3s ease;
+
+                    &:hover {
+                        cursor: pointer;
+                        color: $purple-light;
+                    }
+                }
+            }
+        }
+
+        .error-animation {
+            margin-top: 2rem;
+            font-size: 4rem;
+            color: white;
+            width: 4rem;
+            height: 4rem;
+            animation: rotate 2s linear infinite;
+            transform-origin: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
