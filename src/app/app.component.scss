@@ -1,3 +1,12 @@
+@import "../styles.scss";
+
+.home {
+    background: linear-gradient(#141414 0%,
+            rgba(20, 20, 20, 0.6) 60%,
+            rgba(20, 20, 20, 1) 100%);
+}
+
+
 // .page-wrapper {
 //     display: flex;
 //     flex-direction: column;

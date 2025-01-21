@@ -1,5 +1,9 @@
 <main class="page-wrapper">
-    <router-outlet></router-outlet>
+    <app-navigation />
+    <div class="home">
+        <router-outlet></router-outlet>
+    </div>
+    <app-footer />
     @if (errorServise.error()) {
     <app-error-toast />
     }
