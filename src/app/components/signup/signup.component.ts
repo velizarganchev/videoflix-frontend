@@ -1,4 +1,14 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+  Signal,
+  signal
+} from '@angular/core';
 import {
   AbstractControl,
   FormControl,
@@ -11,11 +21,10 @@ import { of } from 'rxjs';
 import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
 import { SuccessfulRegisterComponent } from "../../shared/successful-register/successful-register.component";
 
-function emailValidator(allEmails: string[]) {
+function emailValidator(allEmails$: Signal<string[]>) {
   return (control: AbstractControl) => {
     const email = control.value;
-
-    if (allEmails.find((existingEmail) => existingEmail === email)) {
+    if (allEmails$().find((existingEmail) => existingEmail === email)) {
       return of({ emailExists: true });
     } else {
       return of(null);
@@ -45,9 +54,10 @@ function equalValuesValidator(controlOne: string, controlTwo: string) {
 })
 
 export class SignupComponent implements OnInit {
-  public authService = inject(AuthService);
+  private authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
 
+  email = input<string>('');
   isSingupLoading = signal<boolean>(false);
   successFullSignup = signal<boolean>(false);
   showPassword = signal<boolean>(false);
@@ -58,12 +68,12 @@ export class SignupComponent implements OnInit {
     username: string;
   }>({ email: '', username: '' });
 
-  allEmails = this.authService.allUserEmails;
+  allEmails = computed(() => this.authService.allUserEmails());
 
   signupForm = new FormGroup({
     email: new FormControl('', {
       validators: [Validators.required, Validators.email],
-      asyncValidators: [emailValidator(this.allEmails())],
+      asyncValidators: [emailValidator(this.authService.allUserEmails)],
     }),
     passwords: new FormGroup(
       {
@@ -81,12 +91,17 @@ export class SignupComponent implements OnInit {
     ),
   });
 
-  ngOnInit(): void {
-    const subscription = this.authService.loadUserEmails().subscribe();
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
+  constructor() {
+    afterNextRender(() => {
+      if (this.email()) {
+        setTimeout(() => {
+          this.signupForm.get('email')?.setValue(this.email());
+        }, 1);
+      }
     });
+  }
+
+  ngOnInit(): void {
   }
 
   togglePasswordVisibility(field: string) {

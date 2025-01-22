@@ -69,6 +69,26 @@
                     &::placeholder {
                         color: white;
                     }
+
+                    &:focus,
+                    &:active {
+                        outline: none;
+                        border-color: white;
+                        background-color: transparent;
+                    }
+
+                    &:-webkit-autofill {
+                        background-color: transparent !important;
+                        /* Ensure background color is overridden */
+                        -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+                        /* Removes browser autofill background */
+                        box-shadow: 0 0 0px 1000px transparent inset !important;
+                        /* Fallback for other browsers */
+                        -webkit-text-fill-color: white !important;
+                        /* Ensures text is visible */
+                        transition: background-color 5000s ease-in-out 0s;
+                        /* Hack to keep autofill background overridden */
+                    }
                 }
 
                 button {

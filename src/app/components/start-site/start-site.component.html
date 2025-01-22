@@ -6,8 +6,9 @@
         </div>
         <div class="start-site-form-container">
             <form>
-                <input type="text" placeholder="Email address" />
-                <button routerLink="/signup">
+                <input type="text" placeholder="Email address" [(ngModel)]="email" required email #emailInput="ngModel"
+                    [ngModelOptions]="{standalone: true}" />
+                <button [disabled]="emailInput.invalid" [routerLink]="['/signup']" [queryParams]="{email: email()}" type="button">
                     Sign Up
                     <img src="../../../assets/icons/arrow_right.png" />
                 </button>
