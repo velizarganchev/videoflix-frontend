@@ -27,7 +27,11 @@ export class AppComponent implements OnInit {
   public errorServise = inject(ErrorService);
 
   ngOnInit(): void {
-    const subscription = this.authService.loadUserEmails().subscribe();
+    const subscription = this.authService.loadUserEmails().subscribe({
+      error: (error) => {
+        console.error(error);
+      },
+    });
     this.destroyRef.onDestroy(() => {
       subscription.unsubscribe();
     });

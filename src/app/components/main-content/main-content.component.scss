@@ -12,55 +12,6 @@
     flex-direction: column;
     overflow-y: hidden;
 
-    .video-preview-container {
-        position: relative;
-
-        .bg-video {
-            width: 100%;
-            height: 100vh;
-            object-fit: cover;
-        }
-
-        .video-preview-info {
-            display: flex;
-            flex-direction: column;
-
-            gap: 2rem;
-            width: 27rem;
-            color: white;
-            position: absolute;
-            top: 20%;
-            left: 5%;
-
-            h1 {
-                font-size: 5.5rem;
-                font-weight: 700;
-                margin: 0;
-            }
-
-            .video-preview-info-text {
-                font-size: 1rem;
-                font-weight: 400;
-            }
-
-            button {
-                color: white;
-                width: fit-content;
-                background-color: $purple;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 0.25rem;
-
-                &:hover {
-                    background-color: darken($purple, 15%);
-                    border: 1px solid white;
-                }
-            }
-
-        }
-    }
-
     .main-video-content {
         overflow: hidden;
 

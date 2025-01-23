@@ -9,7 +9,7 @@ import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { inject } from '@angular/core';
 import { AuthService } from './services/auth.service';
 
-const authGuard: CanMatchFn = (route, segments) => {
+const authGuardMainContent: CanMatchFn = (route, segments) => {
     const router = inject(Router);
     const authService = inject(AuthService);
     const isAuthenticated = authService.getUser();
@@ -17,6 +17,16 @@ const authGuard: CanMatchFn = (route, segments) => {
         return true;
     }
     return new RedirectCommand(router.parseUrl('/start-site'));
+};
+
+const authGuard: CanMatchFn = (route, segments) => {
+    const router = inject(Router);
+    const authService = inject(AuthService);
+    const isAuthenticated = authService.getUser();
+    if (!isAuthenticated) {
+        return true;
+    }
+    return new RedirectCommand(router.parseUrl('/main-content'));
 };
 
 export const routes: Routes = [
@@ -27,28 +37,33 @@ export const routes: Routes = [
     },
     {
         path: 'start-site',
-        component: StartSiteComponent
+        component: StartSiteComponent,
+        canMatch: [authGuard]
     },
     {
         path: 'main-content',
         component: MainContentComponent,
-        canMatch: [authGuard]
+        canMatch: [authGuardMainContent]
     },
     {
         path: 'signup',
-        component: SignupComponent
+        component: SignupComponent,
+        canMatch: [authGuard]
     },
     {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
+        canMatch: [authGuard]
     },
     {
         path: 'forgot-password',
-        component: ForgotPasswordComponent
+        component: ForgotPasswordComponent,
+        canMatch: [authGuard]
     },
     {
         path: 'reset-password',
-        component: ResetPasswordComponent
+        component: ResetPasswordComponent,
+        canMatch: [authGuard]
     },
     {
         path: '**',

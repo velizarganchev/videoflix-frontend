@@ -2,32 +2,7 @@
     @if (showVideo()) {
     <app-video-item [video]="videoToPlay()" (closeVideoClick)="showVideo.set($event)" />
     }
-    <div class="main-content-header">
-        <div class="video-preview-container">
-            <video class="bg-video" autoplay loop muted>
-                <source src="assets/videos/Breakout.mp4" type="video/mp4" />
-
-                Download the
-                <a href="/media/cc0-videos/flower.webm">WEBM</a>
-                or
-                <a href="/media/cc0-videos/flower.mp4">MP4</a>
-                video.
-            </video>
-            <div class="video-preview-info">
-                <h1>Breakout</h1>
-                <div class="video-preview-info-text">In a high-security prison, a wrongly convicted man formulates a
-                    meticulous
-                    plan to break out and prove his innocence. He must navigate a web of alliances and betrayals to
-                    reclaim
-                    his freedom and expose the truth.
-                </div>
-                <button>
-                    <i class="fa-solid fa-play"></i>
-                    Play
-                </button>
-            </div>
-        </div>
-    </div>
+    <app-main-content-header [previewVideo]="previewVideo()"/>
     <div class="main-video-content">
         <div class="video-content-category-container">
             <h1>New on Videoflix</h1>

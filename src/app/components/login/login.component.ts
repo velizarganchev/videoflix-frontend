@@ -63,8 +63,9 @@ export class LoginComponent {
       this.destroyRef.onDestroy(() => {
         subscription.unsubscribe();
       });
-
-      formData.form.reset();
+      setTimeout(() => {
+        formData.form.reset();
+      }, 1000);
     }
   }
 }

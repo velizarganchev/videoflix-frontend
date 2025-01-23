@@ -33,11 +33,19 @@ export class AuthService {
     return !!(user && user.token);
   }
 
+  loadUser() {
+    const user = this.getUser();
+    if (user) {
+      this.user.set(new User(user));
+    }
+  }
+
   loadUserEmails() {
     return this.fetchAllUserEmails().pipe(
       tap({
         next: (emails) => {
           this.userEmails.set(emails);
+          this.loadUser();
         },
       }),
     );

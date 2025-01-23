@@ -1,12 +1,13 @@
-import { Component, ViewChild, ElementRef, input, inject, OnInit, DestroyRef, signal } from '@angular/core';
+import { Component, ViewChild, ElementRef, input, inject, OnInit, DestroyRef, signal, computed } from '@angular/core';
 import { VideoItemComponent } from '../video-item/video-item.component';
 import { VideoService } from '../../services/video.service';
 import { Video } from '../../models/video.class';
+import { MainContentHeaderComponent } from "./main-content-header/main-content-header.component";
 
 @Component({
   selector: 'app-main-content',
   standalone: true,
-  imports: [VideoItemComponent],
+  imports: [VideoItemComponent, MainContentHeaderComponent],
   templateUrl: './main-content.component.html',
   styleUrl: './main-content.component.scss'
 })
@@ -21,6 +22,7 @@ export class MainContentComponent implements OnInit {
   destroyRef = inject(DestroyRef);
 
   videos = this.videosService.loadedVideos;
+  previewVideo = computed(() => this.videos()!.find(video => video.title === 'Breakout'));
 
   ngOnInit(): void {
     this.isFetching.set(true);

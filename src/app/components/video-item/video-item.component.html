@@ -1,18 +1,19 @@
 <section class="video-item-wrapper">
     @if (video()) {
     <div class="video-item">
-        <div class="header" [ngStyle]="{'background-image': 'url(' + getImageUrl() + ')'}">
+        <div class="header"
+            [ngStyle]="{'background-image': 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(' + getImageUrl() + ')'}">
             <div class="back-button" (click)="handleBackClick(false)">
                 <i class="fa-solid fa-arrow-left"></i>
             </div>
-        </div>
-        <div class="video-item-info">
-            <div class="video-item-info-title">
-                <h3>Video Description</h3>
-                <i class="fa-regular fa-star"></i>
-                <!-- <i class="fa-solid fa-star"></i> -->
+            <div class="video-item-info">
+                <div class="video-item-info-title">
+                    <h3>Video Description</h3>
+                    <i class="fa-regular fa-star"></i>
+                    <!-- <i class="fa-solid fa-star"></i> -->
+                </div>
+                <p class="info">{{ video()?.description}}</p>
             </div>
-            <p class="info">{{ video()?.description}}</p>
         </div>
         <video class="main-video" controls>
             <source *ngIf="getVideoUrl(3)" [src]="getVideoUrl(3)" type="video/mp4" label="1080p" />

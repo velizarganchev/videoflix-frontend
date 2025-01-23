@@ -13,13 +13,6 @@ export class VideoItemComponent {
   video = input<Video>();
   closeVideoClick = output<boolean>();
 
-  constructor() {
-    effect(() => {
-      console.log('VideoItemComponent');
-      console.log(this.video());
-    });
-  }
-
   handleBackClick(closeVideo: boolean) {
     this.closeVideoClick.emit(closeVideo);
   }
