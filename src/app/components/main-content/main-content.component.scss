@@ -2,9 +2,8 @@
 
 .main-content-container {
     position: relative;
-    background: linear-gradient(#141414 0%,
-            rgba(20, 20, 20, 0.6) 60%,
-            rgba(20, 20, 20, 1) 100%);
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -14,10 +13,11 @@
 
     .main-video-content {
         overflow: hidden;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
 
         .video-content-category-container {
             margin: 2rem 0;
-            
+
             h1 {
                 font-size: 2rem;
                 margin-bottom: 1.5rem;
@@ -28,6 +28,7 @@
             .video-content-category {
                 position: relative;
                 display: flex;
+                // width: fit-content;
                 align-items: center;
 
                 .arrowLeft,
@@ -85,7 +86,7 @@
 
                         img {
                             width: 100%;
-                            height: auto;
+                            height: 100%;
                             border-radius: 8px;
                             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                         }

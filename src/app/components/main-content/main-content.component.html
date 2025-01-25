@@ -2,29 +2,35 @@
     @if (showVideo()) {
     <app-video-item [video]="videoToPlay()" (closeVideoClick)="showVideo.set($event)" />
     }
-    <app-main-content-header [previewVideo]="previewVideo()"/>
+    <app-main-content-header [previewVideo]="previewVideo()" />
     <div class="main-video-content">
+        @for (videos of groupedVideos() | keyvalue; track $index) {
         <div class="video-content-category-container">
-            <h1>New on Videoflix</h1>
+            <h1>{{ videos.key }}</h1>
             <div class="video-content-category">
+                @if (visibleArrows()[videos.key]) {
                 <div class="arrowLeft">
                     <button (click)="scrollLeft()">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
                 </div>
-                <div class="video-content-category-scroll" #scrollContainer>
-                    @for (video of videos(); track $index) {
+                }
+                <div class="video-content-category-scroll" #scrollContainer [attr.data-category]="videos.key">
+                    @for (video of groupedVideos()[videos.key]; track $index) {
                     <div class="video-content-item" (click)="handleVideoClick(true, video)">
                         <img [src]="'http://127.0.0.1:8000/' + video.image_file" alt="Video">
                     </div>
                     }
                 </div>
+                @if (visibleArrows()[videos.key]){
                 <div class="arrowRight">
                     <button (click)="scrollRight()">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
+                }
             </div>
         </div>
+        }
     </div>
 </section>
