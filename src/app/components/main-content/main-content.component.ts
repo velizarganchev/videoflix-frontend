@@ -8,7 +8,11 @@ import {
   computed,
   viewChildren,
   viewChild,
-  AfterViewChecked
+  AfterViewChecked,
+  QueryList,
+  ViewChildren,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 import { VideoItemComponent } from '../video-item/video-item.component';
 import { VideoService } from '../../services/video.service';
@@ -24,8 +28,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './main-content.component.scss'
 })
 export class MainContentComponent implements OnInit, AfterViewChecked {
-  scrollContainer = viewChild.required<ElementRef>('scrollContainer',);
-  videoContentCategoryScroll = viewChildren<ElementRef>('scrollContainer');
+  scrollContainer = viewChildren<ElementRef>('scrollContainer');
 
   showVideo = signal<boolean>(false);
   isFetching = signal<boolean>(false);
@@ -74,22 +77,20 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
     });
 
     this.visibleArrows.update(() => newVisibility);
-    console.log(this.visibleArrows());
-
   }
 
   getCategoryScrollContainer(category: string): HTMLElement | null {
-    const elements = this.videoContentCategoryScroll();
+    const elements = this.scrollContainer();
     const elementRef = elements.find((el) => el.nativeElement.getAttribute('data-category') === category);
     return elementRef ? elementRef.nativeElement : null;
   }
 
-  scrollLeft() {
-    this.scrollContainer().nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+  scrollLeft(index: number) {
+    this.scrollContainer()[index].nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
   }
 
-  scrollRight() {
-    this.scrollContainer().nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+  scrollRight(index: number) {
+    this.scrollContainer()[index].nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
   }
 
   handleVideoClick(showVideo: boolean, video: Video) {
