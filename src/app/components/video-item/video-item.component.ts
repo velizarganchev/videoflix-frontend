@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, effect, ElementRef, input, output, viewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewInit, Component, effect, ElementRef, inject, input, OnInit, output, signal, viewChild } from '@angular/core';
 import { Video } from '../../models/video.class';
 import { CommonModule } from '@angular/common';
-import videojs from 'video.js';
+import { AuthService } from '../../services/auth.service';
+import { VideoService } from '../../services/video.service';
 
 
 @Component({
@@ -11,13 +12,45 @@ import videojs from 'video.js';
   templateUrl: './video-item.component.html',
   styleUrl: './video-item.component.scss'
 })
-export class VideoItemComponent {
+export class VideoItemComponent implements AfterViewInit {
+  authService = inject(AuthService);
+  videoService = inject(VideoService);
 
+  user = this.authService.getUser();
   video = input<Video>();
+  isInFavorite = signal(false);
   closeVideoClick = output<boolean>();
+
+  ngAfterViewInit(): void {
+    this.checkIfVideoIsFavorite();
+  }
+
+  private checkIfVideoIsFavorite() {
+    const existInFavorite = this.user?.favorite_videos?.some((videoId) => videoId === this.video()!.id) || false;
+    if (existInFavorite) {
+      this.isInFavorite.set(true);
+    } else {
+      this.isInFavorite.set(false);
+    }
+  }
 
   handleBackClick(closeVideo: boolean) {
     this.closeVideoClick.emit(closeVideo);
+  }
+
+  onHandleFavorite(videoId: number) {
+    this.videoService.addToFavorite(videoId).subscribe({
+      next: () => {
+        console.log('Video added or remove to favorite');
+        this.user = this.authService.getUser();
+      },
+      error: (error) => {
+        console.error(error);
+      },
+      complete: () => {
+        this.checkIfVideoIsFavorite();
+      }
+    });
   }
 
   getImageUrl(): string {

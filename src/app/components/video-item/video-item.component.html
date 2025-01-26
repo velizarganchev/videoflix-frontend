@@ -9,8 +9,11 @@
             <div class="video-item-info">
                 <div class="video-item-info-title">
                     <h3>{{ video()?.title }}</h3>
-                    <i class="fa-regular fa-star"></i>
-                    <!-- <i class="fa-solid fa-star"></i> -->
+                    @if (isInFavorite()) {
+                    <i class="fa-solid fa-star" (click)="onHandleFavorite(video()!.id)"></i>
+                    }@else {
+                    <i class="fa-regular fa-star" (click)="onHandleFavorite(video()!.id)"></i>
+                    }
                 </div>
                 <p class="info">{{ video()?.description}}</p>
             </div>

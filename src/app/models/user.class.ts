@@ -4,6 +4,7 @@ export class User {
     email: string;
     phone: string | null;
     address: string | null;
+    favorite_videos: any[];
     password: string;
     token: string;
 
@@ -13,6 +14,7 @@ export class User {
         this.email = obj?.email ?? '';
         this.phone = obj?.phone ?? null;
         this.address = obj?.address ?? null;
+        this.favorite_videos = obj?.favorite_videos ?? [];
         this.password = obj?.password ?? '';
         this.token = obj?.token ?? '';
     }

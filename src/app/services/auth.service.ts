@@ -4,13 +4,14 @@ import { User } from '../models/user.class';
 import { ErrorService } from './error.service';
 import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { use } from 'video.js/dist/types/tech/middleware';
 
 const BASE_URL = 'http://127.0.0.1:8000/api';
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private userEmails = signal<[]>([]);
+  private userEmails = signal<string[]>([]);
   allUserEmails = this.userEmails.asReadonly();
 
   private user = signal<User | null>(null);
@@ -40,10 +41,26 @@ export class AuthService {
     }
   }
 
+  setUser(user: User) {
+    this.user.set(user);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  updateUserFavoriteVideos(favoriteVideos: number[]) {
+    this.user.update((currenUser) => {
+      const updatedUser = new User({ ...currenUser, favorite_videos: favoriteVideos });
+      this.setUser(updatedUser);
+      return updatedUser;
+    })
+    console.log('Updated user favorite videos', this.currentUser()?.favorite_videos);
+
+  }
+
   loadUserEmails() {
-    return this.fetchAllUserEmails().pipe(
+    return this.fetchAllUser().pipe(
       tap({
-        next: (emails) => {
+        next: (users) => {
+          const emails = users.map((user: User) => user.email);
           this.userEmails.set(emails);
           this.loadUser();
         },
@@ -51,7 +68,7 @@ export class AuthService {
     );
   }
 
-  fetchAllUserEmails() {
+  fetchAllUser() {
     // this.httpHeaders.append('Authorization', `Token ${this.currentUser()?.token}`);
     return this.http
       .get<[]>(`${BASE_URL}/users/profiles/`, { headers: this.httpHeaders }).pipe(

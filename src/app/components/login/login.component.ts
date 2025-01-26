@@ -61,6 +61,7 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Error logging in:', error);
+          this.isloading.set(false);
         },
         complete: () => {
           this.isloading.set(false);
