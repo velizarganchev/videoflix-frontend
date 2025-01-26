@@ -30,7 +30,11 @@
                 <input type="checkbox" id="remember-me" [(ngModel)]="rememberMe" name="rememberMe">
                 <label for="remember-me">Remember me</label>
             </div>
-            <button type="submit" [disabled]="loginForm.form.invalid">Log in</button>
+            <button type="submit" [disabled]="loginForm.form.invalid">
+                @if (isloading()) {
+                <app-loading-spinner />
+                }@else { Log in }
+            </button>
             <div class="login-links-container">
                 <div class="link-container">
                     <a routerLink="/forgot-password">Forgot Password?</a>

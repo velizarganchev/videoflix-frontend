@@ -1,6 +1,8 @@
-import { Component, effect, input, output } from '@angular/core';
+import { AfterViewInit, Component, effect, ElementRef, input, output, viewChild } from '@angular/core';
 import { Video } from '../../models/video.class';
 import { CommonModule } from '@angular/common';
+import videojs from 'video.js';
+
 
 @Component({
   selector: 'app-video-item',
@@ -10,6 +12,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './video-item.component.scss'
 })
 export class VideoItemComponent {
+
   video = input<Video>();
   closeVideoClick = output<boolean>();
 

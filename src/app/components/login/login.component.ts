@@ -2,11 +2,12 @@ import { afterNextRender, Component, DestroyRef, inject, signal, viewChild } fro
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, LoadingSpinnerComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -18,6 +19,7 @@ export class LoginComponent {
   router = inject(Router);
 
   showPassword = signal<boolean>(false);
+  isloading = signal<boolean>(false);
   rememberMe = false;
   rememberMeData = localStorage.getItem('rememberMe') ? JSON.parse(localStorage.getItem('rememberMe')!) : null;
 
@@ -41,6 +43,8 @@ export class LoginComponent {
 
   onSubmit(formData: NgForm) {
     if (formData.form.valid) {
+      this.isloading.set(true);
+
       const rememberMe = this.rememberMe;
       const email = formData.form.value.email;
       const password = formData.form.value.password;
@@ -57,6 +61,9 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Error logging in:', error);
+        },
+        complete: () => {
+          this.isloading.set(false);
         }
       });
 

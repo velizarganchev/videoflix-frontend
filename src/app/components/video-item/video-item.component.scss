@@ -52,6 +52,7 @@
                     // background-color: rgba(0, 0, 0, 0.5);
                     margin-top: 20%;
                     height: 100%;
+
                     .video-item-info-title {
                         display: flex;
                         align-items: center;
@@ -71,7 +72,7 @@
                     }
 
                     p {
-                        padding: 0 0.5rem;
+                        padding: 0 1rem;
                         font-size: 1rem;
                         font-weight: 400;
                         line-break: anywhere;
@@ -80,8 +81,9 @@
             }
 
             .main-video {
-                width: 100%;
-                border-radius: 0 0 10px 10px;
+                max-width: 100% !important;
+                height: auto !important;
+                border-radius: 0 0 10px 10px !important;
             }
         }
     }

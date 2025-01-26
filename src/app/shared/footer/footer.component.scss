@@ -5,7 +5,7 @@ footer {
     background-color: transparent;
     height: 4.6rem;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     background: black;
 
@@ -19,6 +19,7 @@ footer {
         font-size: 1.2rem;
         font-weight: 500;
         text-decoration: none;
+        padding-right: 2rem;
 
         a {
             color: white;

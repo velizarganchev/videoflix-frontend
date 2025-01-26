@@ -1,6 +1,7 @@
 @import '../../../../styles.scss';
 
 .main-content-header {
+    position: relative;
 
     .video-preview-container {
         position: relative;
@@ -51,4 +52,37 @@
 
         }
     }
+
+    .preview-video-container {
+        position: fixed;
+        background-color: black;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 2000;
+
+        .preview-video-close {
+            position: absolute;
+            background-color: transparent;
+            top: 1rem;
+            right: 1rem;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 2001;
+
+            &:hover {
+                color: darken(white, 40%);
+            }
+        }
+
+        .preview-video {
+            width: 100%;
+            height: 100vh;
+        }
+    }
+}
+
+.hide-scroll {
+    overflow: hidden !important;
 }

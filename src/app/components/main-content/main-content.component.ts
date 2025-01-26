@@ -7,18 +7,15 @@ import {
   signal,
   computed,
   viewChildren,
-  viewChild,
   AfterViewChecked,
-  QueryList,
-  ViewChildren,
-  OnChanges,
-  SimpleChanges
+  HostListener
 } from '@angular/core';
 import { VideoItemComponent } from '../video-item/video-item.component';
 import { VideoService } from '../../services/video.service';
 import { Video } from '../../models/video.class';
 import { MainContentHeaderComponent } from "./main-content-header/main-content-header.component";
 import { CommonModule } from '@angular/common';
+import { VjsPlayerComponent } from "../../shared/vjs-player/vjs-player.component";
 
 @Component({
   selector: 'app-main-content',
@@ -62,6 +59,11 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
+    this.updateArrowVisibility();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
     this.updateArrowVisibility();
   }
 
