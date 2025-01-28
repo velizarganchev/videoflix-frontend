@@ -1,3 +1,6 @@
+import { inject } from '@angular/core';
+import { AuthService } from './services/auth.service';
+import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { Routes, RedirectCommand, CanMatchFn, Router } from '@angular/router';
 import { StartSiteComponent } from './components/start-site/start-site.component';
 import { SignupComponent } from './components/signup/signup.component';
@@ -6,8 +9,18 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { MainContentComponent } from './components/main-content/main-content.component';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
-import { inject } from '@angular/core';
-import { AuthService } from './services/auth.service';
+
+
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
+    if (req.url.includes('/content')) {
+        const authToken = inject(AuthService).getUserToken();
+        const clonedRequest = req.clone({
+            headers: req.headers.append('Authorization', `Token ${authToken}`),
+        });
+        return next(clonedRequest);
+    }
+    return next(req);
+}
 
 const authGuardMainContent: CanMatchFn = (route, segments) => {
     const router = inject(Router);

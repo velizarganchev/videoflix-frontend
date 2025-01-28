@@ -21,12 +21,17 @@ export class AuthService {
   private httpHeaders = new HttpHeaders({
     'Content-Type': 'application/json',
   });
+
   private errorService = inject(ErrorService);
   private router = inject(Router);
 
   getUser(): User | null {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  getUserToken(): string {
+    return this.getUser()?.token || '';
   }
 
   isLoggedIn(): boolean {
@@ -69,7 +74,6 @@ export class AuthService {
   }
 
   fetchAllUser() {
-    // this.httpHeaders.append('Authorization', `Token ${this.currentUser()?.token}`);
     return this.http
       .get<[]>(`${BASE_URL}/users/profiles/`, { headers: this.httpHeaders }).pipe(
         catchError((error) => {

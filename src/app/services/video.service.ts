@@ -18,7 +18,7 @@ export class VideoService {
   private authService = inject(AuthService);
 
   private httpHeaders: HttpHeaders = new HttpHeaders({
-    Authorization: 'Token ' + 'b0ab83d0c8f08d29f22371c9d979d487a9efcc14'
+    'Content-Type': 'application/json', 
   });
 
   loadVideos() {
@@ -31,7 +31,7 @@ export class VideoService {
     )
   }
 
-  private fetchVideos() {
+  private fetchVideos() {    
     return this.http.get<Video[]>(`${BASE_URL}/content/`, { headers: this.httpHeaders }).pipe(
       catchError((error) => {
         this.errorService.showError('Failed to fetch videos');
@@ -51,7 +51,6 @@ export class VideoService {
   }
 
   storeFavoriteVideo(video_id: number) {
-    this.httpHeaders.set('Authorization', `Token cb4c62e05042121905f0bc52f6ba54ca5f785304`);
     return this.http.post<number[]>(`${BASE_URL}/content/add-favorite/`, {
       "video_id": video_id
     }, { headers: this.httpHeaders }).pipe(
