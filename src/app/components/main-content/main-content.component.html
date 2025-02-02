@@ -1,9 +1,38 @@
 <section class="main-content-container">
     @if (showVideo()) {
-    <app-video-item [video]="videoToPlay()" (closeVideoClick)="showVideo.set($event)" />
+    <app-video-item [video]="videoToPlay()" (favoriteVideosUpdated)="updateFavorite()"
+        (closeVideoClick)="showVideo.set($event)" />
     }
     <app-main-content-header [previewVideo]="previewVideo()" />
     <div class="main-video-content">
+        @if (favoriteVideos().length > 0) {
+        <div class="video-content-category-container">
+            <h1>My Favorite</h1>
+            <div class="video-content-category">
+                @if (visibleArrows()['favorite']) {
+                <div class="arrowLeft">
+                    <button (click)="scrollLeft('favorite')">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+                }
+                <div class="video-content-category-scroll" #favoriteScrollContainer [attr.data-category]="'favorite'">
+                    @for (video of favoriteVideos(); track $index) {
+                    <div class="video-content-item" (click)="handleVideoClick(true, video)">
+                        <img [src]="'http://127.0.0.1:8000/' + video.image_file" alt="Video">
+                    </div>
+                    }
+                </div>
+                @if (visibleArrows()['favorite']) {
+                <div class="arrowRight">
+                    <button (click)="scrollRight('favorite')">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                }
+            </div>
+        </div>
+        }
         @for (videos of groupedVideos() | keyvalue; track $index) {
         <div class="video-content-category-container">
             <h1>{{ videos.key }}</h1>

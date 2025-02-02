@@ -57,8 +57,6 @@ export class AuthService {
       this.setUser(updatedUser);
       return updatedUser;
     })
-    console.log('Updated user favorite videos', this.currentUser()?.favorite_videos);
-
   }
 
   loadUserEmails() {

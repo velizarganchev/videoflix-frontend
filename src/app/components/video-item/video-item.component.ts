@@ -1,4 +1,4 @@
-import { AfterContentChecked, AfterViewInit, Component, effect, ElementRef, inject, input, OnInit, output, signal, viewChild } from '@angular/core';
+import { AfterViewInit, Component, effect, ElementRef, inject, input, OnInit, output, signal } from '@angular/core';
 import { Video } from '../../models/video.class';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -21,6 +21,7 @@ export class VideoItemComponent implements AfterViewInit {
   video = input<Video>();
   isInFavorite = signal(false);
   closeVideoClick = output<boolean>();
+  favoriteVideosUpdated = output<void>();
 
   ngAfterViewInit(): void {
     this.checkIfVideoIsFavorite();
@@ -42,7 +43,6 @@ export class VideoItemComponent implements AfterViewInit {
   onHandleFavorite(videoId: number) {
     this.videoService.addToFavorite(videoId).subscribe({
       next: () => {
-        console.log('Video added or remove to favorite');
         this.user = this.authService.getUser();
       },
       error: (error) => {
@@ -50,6 +50,7 @@ export class VideoItemComponent implements AfterViewInit {
       },
       complete: () => {
         this.checkIfVideoIsFavorite();
+        this.favoriteVideosUpdated.emit();
       }
     });
   }

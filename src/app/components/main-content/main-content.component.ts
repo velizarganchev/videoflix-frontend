@@ -8,14 +8,15 @@ import {
   computed,
   viewChildren,
   AfterViewChecked,
-  HostListener
+  HostListener,
+  viewChild,
 } from '@angular/core';
 import { VideoItemComponent } from '../video-item/video-item.component';
 import { VideoService } from '../../services/video.service';
 import { Video } from '../../models/video.class';
 import { MainContentHeaderComponent } from "./main-content-header/main-content-header.component";
 import { CommonModule } from '@angular/common';
-import { VjsPlayerComponent } from "../../shared/vjs-player/vjs-player.component";
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-main-content',
@@ -26,19 +27,23 @@ import { VjsPlayerComponent } from "../../shared/vjs-player/vjs-player.component
 })
 export class MainContentComponent implements OnInit, AfterViewChecked {
   scrollContainer = viewChildren<ElementRef>('scrollContainer');
+  favoriteScrollContainer = viewChildren<ElementRef>('favoriteScrollContainer');
 
   showVideo = signal<boolean>(false);
   isFetching = signal<boolean>(false);
   videoToPlay = signal<Video | undefined>(undefined);
 
   videosService = inject(VideoService);
+  userService = inject(AuthService);
   destroyRef = inject(DestroyRef);
 
   videos = computed(() => this.videosService.loadedVideos());
   groupedVideos = signal<{ [key: string]: Video[]; }>({});
+  favoriteVideos = signal<Video[]>([]);
   visibleArrows = signal<{ [key: string]: boolean }>({});
 
   previewVideo = computed(() => this.videos()!.find(video => video.title === 'Breakout'));
+  user = computed(() => this.userService.getUser());
 
   ngOnInit(): void {
     this.isFetching.set(true);
@@ -50,6 +55,7 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
         this.isFetching.set(false);
         this.groupedVideos.set(this.groupByCategory(this.videos()!));
         this.updateArrowVisibility();
+        this.favoriteVideos.set(this.videos()!.filter(video => this.user()?.favorite_videos?.includes(video.id)));
       }
     });
 
@@ -67,6 +73,11 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
     this.updateArrowVisibility();
   }
 
+  updateFavorite() {
+    this.user = computed(() => this.userService.getUser());
+    this.favoriteVideos.set(this.videos()!.filter(video => this.user()?.favorite_videos?.includes(video.id)));
+  }
+
   updateArrowVisibility() {
     const groupedVideos = this.groupedVideos();
     const newVisibility: { [key: string]: boolean } = {};
@@ -78,6 +89,16 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
       }
     });
 
+    // 🔹 Füge die Prüfung für Favorite Videos hinzu
+    if (this.favoriteScrollContainer()) {
+      const elements = this.favoriteScrollContainer();
+      const elementRef = elements!.find((el) => el.nativeElement.getAttribute('data-category') === 'favorite');
+      
+      if (elementRef) {
+        newVisibility['favorite'] = elementRef.nativeElement.scrollWidth > elementRef.nativeElement.clientWidth;
+      }
+    }
+
     this.visibleArrows.update(() => newVisibility);
   }
 
@@ -87,13 +108,26 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
     return elementRef ? elementRef.nativeElement : null;
   }
 
-  scrollLeft(index: number) {
-    this.scrollContainer()[index].nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+  scrollLeft(category: string | number) {
+    if (category === 'favorite' && this.favoriteScrollContainer) {
+      const favoriteContainer = this.favoriteScrollContainer().find(el => el.nativeElement.getAttribute('data-category') === 'favorite');
+      favoriteContainer?.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+    } else {
+      const container = this.scrollContainer().find((el, index) => index === category);
+      container?.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+    }
   }
-
-  scrollRight(index: number) {
-    this.scrollContainer()[index].nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+  
+  scrollRight(category: string | number) {
+    if (category === 'favorite' && this.favoriteScrollContainer) {
+      const favoriteContainer = this.favoriteScrollContainer().find(el => el.nativeElement.getAttribute('data-category') === 'favorite');
+      favoriteContainer?.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+    } else {
+      const container = this.scrollContainer().find((el, index) => index === category);
+      container?.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+    }
   }
+  
 
   handleVideoClick(showVideo: boolean, video: Video) {
     this.videoToPlay.set(video);
