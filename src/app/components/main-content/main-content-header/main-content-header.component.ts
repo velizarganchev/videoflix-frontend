@@ -1,11 +1,12 @@
 import { Component, input, signal } from '@angular/core';
 import { Video } from '../../../models/video.class';
 import { CommonModule } from '@angular/common';
+import { VjsPlayerComponent } from "../../../shared/vjs-player/vjs-player.component";
 
 @Component({
   selector: 'app-main-content-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, VjsPlayerComponent],
   templateUrl: './main-content-header.component.html',
   styleUrl: './main-content-header.component.scss'
 })

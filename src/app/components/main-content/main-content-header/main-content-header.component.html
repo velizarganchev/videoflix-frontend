@@ -25,12 +25,27 @@
         <button class="preview-video-close" (click)="handelPlay()">
             <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <video class="preview-video" controls autoplay playsinline>
+        <!-- <video class="preview-video" controls autoplay playsinline>
             <source *ngIf="getVideoUrl(3)" [src]="getVideoUrl(3)" type="video/mp4" label="1080p" />
             <source *ngIf="getVideoUrl(2)" [src]="getVideoUrl(2)" type="video/mp4" label="720p" />
             <source *ngIf="getVideoUrl(1)" [src]="getVideoUrl(1)" type="video/mp4" label="360p" />
             <source *ngIf="getVideoUrl(0)" [src]="getVideoUrl(0)" type="video/mp4" label="120p" />
-        </video>
+        </video> -->
+        <app-vjs-player [customHeight]="100" [options]="{
+            preferFullWindow: false,
+            playsinline: true,
+            fluid: false,
+            autoplay: true,
+            muted: false,
+            controls: true,
+            playbackRates: [0.5, 1, 1.5, 2],
+            sources: [
+            { src: getVideoUrl(3), type: 'video/mp4' },
+            { src: getVideoUrl(2), type: 'video/mp4' },
+            { src: getVideoUrl(1), type: 'video/mp4' },
+            { src: getVideoUrl(0), type: 'video/mp4' }
+            ]
+          }"></app-vjs-player>
     </div>
     }
 </div>

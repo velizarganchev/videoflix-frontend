@@ -3,12 +3,13 @@ import { Video } from '../../models/video.class';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { VideoService } from '../../services/video.service';
+import { VjsPlayerComponent } from "../../shared/vjs-player/vjs-player.component";
 
 
 @Component({
   selector: 'app-video-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, VjsPlayerComponent],
   templateUrl: './video-item.component.html',
   styleUrl: './video-item.component.scss'
 })

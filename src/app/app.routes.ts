@@ -9,6 +9,7 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { MainContentComponent } from './components/main-content/main-content.component';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
+import { PlaygroundComponent } from './components/playground/playground.component';
 
 
 export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {

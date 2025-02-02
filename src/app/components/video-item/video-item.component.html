@@ -18,12 +18,21 @@
                 <p class="info">{{ video()?.description}}</p>
             </div>
         </div>
-        <video class="main-video" controls>
-            <source *ngIf="getVideoUrl(3)" [src]="getVideoUrl(3)" type="video/mp4" label="1080p" />
-            <source *ngIf="getVideoUrl(2)" [src]="getVideoUrl(2)" type="video/mp4" label="720p" />
-            <source *ngIf="getVideoUrl(1)" [src]="getVideoUrl(1)" type="video/mp4" label="360p" />
-            <source *ngIf="getVideoUrl(0)" [src]="getVideoUrl(0)" type="video/mp4" label="120p" />
-        </video>
+        <app-vjs-player [customHeight]="50" [options]="{
+            preferFullWindow: false,
+            playsinline: false,
+            fluid: false,
+            autoplay: false,
+            muted: false,
+            controls: true,
+            playbackRates: [0.5, 1, 1.5, 2],
+            sources: [
+            { src: getVideoUrl(3), type: 'video/mp4' },
+            { src: getVideoUrl(2), type: 'video/mp4' },
+            { src: getVideoUrl(1), type: 'video/mp4' },
+            { src: getVideoUrl(0), type: 'video/mp4' }
+            ]
+          }"></app-vjs-player>
     </div>
     }
 </section>
