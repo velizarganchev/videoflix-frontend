@@ -10,6 +10,8 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { MainContentComponent } from './components/main-content/main-content.component';
 import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { PlaygroundComponent } from './components/playground/playground.component';
+import { ImprintComponent } from './components/imprint/imprint.component';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 
 
 export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
@@ -78,6 +80,14 @@ export const routes: Routes = [
         path: 'reset-password',
         component: ResetPasswordComponent,
         canMatch: [authGuard]
+    },
+    {
+        path: 'imprint',
+        component: ImprintComponent,
+    },
+    {
+        path: 'privacy-policy',
+        component: PrivacyPolicyComponent,
     },
     {
         path: '**',
