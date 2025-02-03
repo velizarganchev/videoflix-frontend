@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-privacy-policy',
@@ -8,7 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './privacy-policy.component.scss'
 })
 export class PrivacyPolicyComponent {
-  back(){
-    
+  _location = inject(Location);
+
+  backClicked() {
+    this._location.back();
   }
 }

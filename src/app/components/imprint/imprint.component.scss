@@ -8,11 +8,25 @@
         color: white;
         background: #595959;
         padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        max-width: 500px;
+        border-radius: 0.75rem;
+        box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
+        max-width: 31.25rem;
         width: 100%;
         text-align: center;
+
+        .goback-container {
+            display: flex;
+
+            a {
+                font-size: 2rem;
+                transition: all 0.3s ease-in-out;
+
+                &:hover {
+                    cursor: pointer;
+                    transform: scale(1.3);
+                }
+            }
+        }
 
         h1 {
             font-size: 2rem;
