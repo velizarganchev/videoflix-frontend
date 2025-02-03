@@ -18,7 +18,7 @@
                 <p class="info">{{ video()?.description}}</p>
             </div>
         </div>
-        <app-vjs-player [customHeight]="50" [options]="{
+        <app-vjs-player [qualityMessage]="sourceUpdateMessage()" [customHeight]="50" [options]="{
             preferFullWindow: false,
             playsinline: false,
             fluid: false,
@@ -27,10 +27,7 @@
             controls: true,
             playbackRates: [0.5, 1, 1.5, 2],
             sources: [
-            { src: getVideoUrl(3), type: 'video/mp4' },
-            { src: getVideoUrl(2), type: 'video/mp4' },
-            { src: getVideoUrl(1), type: 'video/mp4' },
-            { src: getVideoUrl(0), type: 'video/mp4' }
+            { src: defaultSource(), type: 'video/mp4' }
             ]
           }"></app-vjs-player>
     </div>

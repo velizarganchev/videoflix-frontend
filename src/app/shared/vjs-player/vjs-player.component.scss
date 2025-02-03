@@ -1,4 +1,17 @@
-.video-js {
-    width: 100%;
-    height: var(--video-height);
+:host {
+    position: relative;
+
+    .quality-message {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        z-index: 1;
+        font-size: 1rem;
+        color: gray;
+    }
+
+    .video-js {
+        width: 100%;
+        height: var(--video-height);
+    }
 }
