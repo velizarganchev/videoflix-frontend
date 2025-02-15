@@ -1,4 +1,15 @@
-import { AfterViewInit, Component, ElementRef, input, OnDestroy, OnInit, effect, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  input,
+  OnDestroy,
+  viewChild,
+  output,
+  AfterViewInit,
+  OnChanges,
+  SimpleChanges,
+  signal
+} from '@angular/core';
 import videojs from 'video.js';
 
 @Component({
@@ -8,11 +19,17 @@ import videojs from 'video.js';
   templateUrl: './vjs-player.component.html',
   styleUrl: './vjs-player.component.scss'
 })
-export class VjsPlayerComponent implements OnInit, OnDestroy {
+export class VjsPlayerComponent implements AfterViewInit, OnChanges, OnDestroy {
 
-  target = viewChild('target', { read: ElementRef });
+  target = viewChild<ElementRef>('target');
   customHeight = input.required<number>();
   qualityMessage = input<string>();
+  currentTime = input<number>(0);
+  videoId = input<number>(0);
+  currentTimeUpdated = output<number>();
+  startFromSavedTime = input<boolean>();
+  syncTimeWithNetworkSpeed = signal<number>(0);
+
 
   options = input.required<{
     preferFullWindow: boolean,
@@ -30,22 +47,63 @@ export class VjsPlayerComponent implements OnInit, OnDestroy {
 
   player: any;
 
-  constructor() {
-    effect(() => {
-      const options = this.options();
-      if (this.player) {
-        this.player.src(options.sources);
-        this.player.load(); 
-        // this.player.play(); // Starte die Wiedergabe (falls autoplay aktiviert ist)
-      }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['options'] && this.player) {
+      this.syncTimeWithNetworkSpeed.set(this.currentTime());
+      this.updateSource(this.options().sources);
+    }
+  }
+
+  private updateSource(sources: any[]): void {
+    this.player.src(sources);
+    this.player.load();
+
+    // Warte auf Metadata, bevor Zeit gesetzt wird
+    this.player.one('loadedmetadata', () => {
+      this.safeSetCurrentTime(this.syncTimeWithNetworkSpeed());
     });
   }
 
-  ngOnInit() {
-    console.log('VjsPlayerComponent initialized', this.options());
-    document.documentElement.style.setProperty('--video-height', this.customHeight() + 'vh');
+  private safeSetCurrentTime(time: number): void {
+    if (this.player && this.player.readyState() >= 1) {
+      this.player.currentTime(time);
+    }
+  }
 
-    this.player = videojs(this.target()?.nativeElement, this.options());
+  ngAfterViewInit() {
+    document.documentElement.style.setProperty('--video-height', this.customHeight() + 'vh');
+    this.initializePlayer();
+  }
+
+  private initializePlayer() {
+    if (!this.target()?.nativeElement) {
+      console.error('Video element not found');
+      return;
+    }
+
+    this.player = videojs(
+      this.target()!.nativeElement,
+      this.options()
+    );
+
+    this.player.ready(() => {
+      this.setInitialTime();
+    });
+
+    this.player.on('timeupdate', () => {
+      this.currentTimeUpdated.emit(this.player.currentTime());
+    });
+  }
+
+  private setInitialTime() {
+    const targetTime = this.startFromSavedTime() ? this.currentTime() : 0;
+    if (targetTime > 0 && this.player) {
+      try {
+        this.player.currentTime(targetTime);
+      } catch (e) {
+        console.error('Error setting time:', e);
+      }
+    }
   }
 
   ngOnDestroy() {

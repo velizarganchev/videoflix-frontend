@@ -18,7 +18,9 @@
                 <p class="info">{{ video()?.description}}</p>
             </div>
         </div>
-        <app-vjs-player [qualityMessage]="sourceUpdateMessage()" [customHeight]="50" [options]="{
+        <app-vjs-player [startFromSavedTime]="startSavedTime()" [videoId]="video()!.id"
+            (currentTimeUpdated)="updateCurrentTime($event)" [currentTime]="currentTime()"
+            [qualityMessage]="sourceUpdateMessage()" [customHeight]="50" [options]="{
             preferFullWindow: false,
             playsinline: false,
             fluid: false,

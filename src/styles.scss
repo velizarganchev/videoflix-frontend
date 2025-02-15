@@ -1,5 +1,5 @@
 @import "./fonts.scss";
-
+@import 'video.js/dist/video-js.css';
 
 $purple: #2E3EDF;
 $purple-light: #2E3EDF80;
@@ -65,8 +65,8 @@ button {
     }
 }
 
-.video-js .vjs-big-play-button {
-    font-size: 2rem;
-    top: 50%;
-    left: 40%;
-}
+// .video-js .vjs-big-play-button {
+//     font-size: 2rem;
+//     top: 50%;
+//     left: 40%;
+// }
