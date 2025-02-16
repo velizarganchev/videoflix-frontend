@@ -1,6 +1,13 @@
-import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { VjsPlayerComponent } from "../../../shared/vjs-player/vjs-player.component";
+import { VjsPlayerComponent } from '../../../shared/vjs-player/vjs-player.component';
 import { VideoProgressService } from '../../../services/video-progress.service';
 import { VideoQualityService } from '../../../services/video-quality.service';
 import { VideoService } from '../../../services/video.service';
@@ -10,16 +17,17 @@ import { VideoService } from '../../../services/video.service';
   standalone: true,
   imports: [CommonModule, VjsPlayerComponent],
   templateUrl: './main-content-header.component.html',
-  styleUrl: './main-content-header.component.scss'
+  styleUrl: './main-content-header.component.scss',
 })
 export class MainContentHeaderComponent implements OnInit, OnDestroy {
-
   videosService = inject(VideoService);
   videoProgressService = inject(VideoProgressService);
   videoQualityService = inject(VideoQualityService);
 
   videos = computed(() => this.videosService.loadedVideos());
-  previewVideo = computed(() => this.videos()!.find(video => video.title === 'Breakout'));
+  previewVideo = computed(() =>
+    this.videos()!.find((video) => video.title === 'Breakout')
+  );
 
   playVideo = signal<boolean>(false);
   videoId = signal<number>(0);
@@ -31,11 +39,17 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error loading videos:', err);
-      }
+      },
+      complete: () => {
+        console.log('Videos loaded', this.previewVideo());
+      },
     });
+    console.log('previewVideo', this.previewVideo());
   }
 
   handelPlay() {
+    console.log('handelPlay', this.videoProgressService.video());
+
     this.playVideo.set(!this.playVideo());
 
     if (!this.playVideo()) {
@@ -43,18 +57,13 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
     }
 
     if (this.playVideo()) {
-      this.videoQualityService.sourceUpdateMessage.set('Optimizing video for your screen.');
+      this.videoQualityService.sourceUpdateMessage.set(
+        'Optimizing video for your screen.'
+      );
       this.videoProgressService.loadVideoProgress(this.previewVideo()!.id);
       this.videoQualityService.clearMessage();
       this.videoProgressService.updateVideoSource();
     }
-  }
-
-  getVideoUrl(index: number): string | null {
-    const video = this.previewVideo();
-    return video?.converted_files?.[index]
-      ? `http://127.0.0.1:8000${video.converted_files[index]}`
-      : null;
   }
 
   updateCurrentTime(time: number) {
@@ -62,6 +71,8 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.videoProgressService.saveVideoProgress(this.previewVideo()!.id);
+    if (this.previewVideo()?.id) {
+      this.videoProgressService.saveVideoProgress(this.previewVideo()!.id);
+    }
   }
 }

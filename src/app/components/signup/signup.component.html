@@ -6,7 +6,7 @@
             <div class="input-container">
                 <input type="email" placeholder="Email Address" formControlName="email" />
             </div>
-            @if (signupForm.controls.email.invalid && signupForm.controls.email.touched) {
+            @if (signupForm.controls.email.invalid) {
             <p>
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 Email invalid or existing.

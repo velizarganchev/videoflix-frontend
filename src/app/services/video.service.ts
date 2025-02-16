@@ -7,7 +7,7 @@ import { AuthService } from './auth.service';
 
 const BASE_URL = 'http://127.0.0.1:8000/api';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class VideoService {
   private videos = signal<Video[] | undefined>([]);
@@ -26,18 +26,20 @@ export class VideoService {
       tap({
         next: (videos) => {
           this.videos.set(videos);
-        }
+        },
       })
-    )
+    );
   }
 
   private fetchVideos(): Observable<Video[]> {
-    return this.http.get<Video[]>(`${BASE_URL}/content/`, { headers: this.httpHeaders }).pipe(
-      catchError((error) => {
-        this.errorService.showError('Failed to fetch videos');
-        return throwError(() => new Error('Failed to fetch videos'));
-      })
-    )
+    return this.http
+      .get<Video[]>(`${BASE_URL}/content/`, { headers: this.httpHeaders })
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to fetch videos');
+          return throwError(() => new Error('Failed to fetch videos'));
+        })
+      );
   }
 
   addToFavorite(video_id: number): Observable<number[]> {
@@ -45,19 +47,25 @@ export class VideoService {
       tap({
         next: (favoriteVideos: number[]) => {
           this.authService.updateUserFavoriteVideos(favoriteVideos);
-        }
+        },
       })
-    )
+    );
   }
 
   storeFavoriteVideo(video_id: number): Observable<number[]> {
-    return this.http.post<number[]>(`${BASE_URL}/content/add-favorite/`, {
-      "video_id": video_id
-    }, { headers: this.httpHeaders }).pipe(
-      catchError((error) => {
-        this.errorService.showError('Failed to store favorite video');
-        return throwError(() => new Error('Failed to store favorite video'));
-      })
-    )
+    return this.http
+      .post<number[]>(
+        `${BASE_URL}/content/add-favorite/`,
+        {
+          video_id: video_id,
+        },
+        { headers: this.httpHeaders }
+      )
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to store favorite video');
+          return throwError(() => new Error('Failed to store favorite video'));
+        })
+      );
   }
 }

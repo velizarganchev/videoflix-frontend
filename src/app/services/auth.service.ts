@@ -53,10 +53,13 @@ export class AuthService {
 
   updateUserFavoriteVideos(favoriteVideos: number[]) {
     this.user.update((currenUser) => {
-      const updatedUser = new User({ ...currenUser, favorite_videos: favoriteVideos });
+      const updatedUser = new User({
+        ...currenUser,
+        favorite_videos: favoriteVideos,
+      });
       this.setUser(updatedUser);
       return updatedUser;
-    })
+    });
   }
 
   loadUserEmails() {
@@ -67,13 +70,14 @@ export class AuthService {
           this.userEmails.set(emails);
           this.loadUser();
         },
-      }),
+      })
     );
   }
 
   fetchAllUser() {
     return this.http
-      .get<[]>(`${BASE_URL}/users/profiles/`, { headers: this.httpHeaders }).pipe(
+      .get<[]>(`${BASE_URL}/users/profiles/`, { headers: this.httpHeaders })
+      .pipe(
         catchError((error) => {
           this.errorService.showError('Failed to fetch user emails');
           return throwError(() => new Error('Failed to fetch user emails'));
@@ -121,7 +125,7 @@ export class AuthService {
 
   logout() {
     this.user.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { replaceUrl: true });
     localStorage.removeItem('user');
   }
 
@@ -140,7 +144,11 @@ export class AuthService {
       );
   }
 
-  private createUser(email: string, password: string, confirm_password: string) {
+  private createUser(
+    email: string,
+    password: string,
+    confirm_password: string
+  ) {
     return this.http
       .post<User>(
         `${BASE_URL}/users/register/`,
@@ -156,20 +164,34 @@ export class AuthService {
   }
 
   private forgotPasswordUser(email: string) {
-    return this.http.post(`${BASE_URL}/users/forgot-password/`, { email }, { headers: this.httpHeaders }).pipe(
-      catchError((error) => {
-        this.errorService.showError('Failed to send password reset email');
-        return throwError(() => new Error('Failed to send password reset email'));
-      })
-    );
+    return this.http
+      .post(
+        `${BASE_URL}/users/forgot-password/`,
+        { email },
+        { headers: this.httpHeaders }
+      )
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to send password reset email');
+          return throwError(
+            () => new Error('Failed to send password reset email')
+          );
+        })
+      );
   }
 
   private resetPasswordUser(uid: string, token: string, new_password: string) {
-    return this.http.post(`${BASE_URL}/users/reset-password/`, { uid, token, new_password }, { headers: this.httpHeaders }).pipe(
-      catchError((error) => {
-        this.errorService.showError('Failed to reset password');
-        return throwError(() => new Error('Failed to reset password'));
-      })
-    );
+    return this.http
+      .post(
+        `${BASE_URL}/users/reset-password/`,
+        { uid, token, new_password },
+        { headers: this.httpHeaders }
+      )
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to reset password');
+          return throwError(() => new Error('Failed to reset password'));
+        })
+      );
   }
 }

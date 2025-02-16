@@ -1,5 +1,4 @@
 import {
-  afterNextRender,
   Component,
   computed,
   DestroyRef,
@@ -7,7 +6,7 @@ import {
   input,
   OnInit,
   Signal,
-  signal
+  signal,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -18,8 +17,8 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { of } from 'rxjs';
-import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
-import { SuccessfulRegisterComponent } from "../../shared/successful-register/successful-register.component";
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
+import { SuccessfulRegisterComponent } from '../../shared/successful-register/successful-register.component';
 
 function emailValidator(allEmails$: Signal<string[]>) {
   return (control: AbstractControl) => {
@@ -48,11 +47,14 @@ function equalValuesValidator(controlOne: string, controlTwo: string) {
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [ReactiveFormsModule, LoadingSpinnerComponent, SuccessfulRegisterComponent],
+  imports: [
+    ReactiveFormsModule,
+    LoadingSpinnerComponent,
+    SuccessfulRegisterComponent,
+  ],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })
-
 export class SignupComponent implements OnInit {
   private authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
@@ -77,31 +79,21 @@ export class SignupComponent implements OnInit {
     }),
     passwords: new FormGroup(
       {
-        password: new FormControl('',
-          {
-            validators: [
-              Validators.required,
-              Validators.minLength(6),
-            ]
-          }
-        ),
-        confirmPassword: new FormControl('', { validators: [Validators.required] }),
+        password: new FormControl('', {
+          validators: [Validators.required, Validators.minLength(6)],
+        }),
+        confirmPassword: new FormControl('', {
+          validators: [Validators.required],
+        }),
       },
       { validators: [equalValuesValidator('password', 'confirmPassword')] }
     ),
   });
 
-  constructor() {
-    afterNextRender(() => {
-      if (this.email()) {
-        setTimeout(() => {
-          this.signupForm.get('email')?.setValue(this.email());
-        }, 1);
-      }
-    });
-  }
-
   ngOnInit(): void {
+    if (this.email()) {
+      this.signupForm.get('email')?.setValue(this.email());
+    }
   }
 
   togglePasswordVisibility(field: string) {
@@ -117,24 +109,30 @@ export class SignupComponent implements OnInit {
       this.isSingupLoading.set(true);
       const email = this.signupForm.get('email')?.value;
       const password = this.signupForm.get('passwords.password')?.value;
-      const confirmPassword = this.signupForm.get('passwords.confirmPassword')?.value;
+      const confirmPassword = this.signupForm.get(
+        'passwords.confirmPassword'
+      )?.value;
 
-      const subscription = this.authService.signup(email!, password!, confirmPassword!).subscribe({
-        next: (user) => {
-          console.log('User signed up successfully');
-          this.userData.set({
-            email: user.email,
-            username: user.email.split('@')[0],
-          });
-        },
-        error: (error) => {
-          console.error('Error signing up:', error);
-        },
-        complete: () => {
-          this.isSingupLoading.set(false);
-          this.successFullSignup.set(true);
-        },
-      });
+      const subscription = this.authService
+        .signup(email!, password!, confirmPassword!)
+        .subscribe({
+          next: (user) => {
+            console.log('User signed up successfully');
+            this.userData.set({
+              email: user.email,
+              username: user.email.split('@')[0],
+            });
+          },
+          error: (error) => {
+            console.error('Error signing up:', error);
+            this.isSingupLoading.set(false);
+            this.signupForm.reset();
+          },
+          complete: () => {
+            this.isSingupLoading.set(false);
+            this.successFullSignup.set(true);
+          },
+        });
 
       this.destroyRef.onDestroy(() => {
         subscription.unsubscribe();

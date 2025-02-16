@@ -1,68 +1,68 @@
 @import "./fonts.scss";
-@import 'video.js/dist/video-js.css';
+@import "video.js/dist/video-js.css";
 
-$purple: #2E3EDF;
-$purple-light: #2E3EDF80;
+$purple: #2e3edf;
+$purple-light: #2e3edf80;
 
 @mixin scrollbar() {
-    &::-webkit-scrollbar {
-        width: 14px;
-        height: 18px;
-        background-color: #141414;
+  &::-webkit-scrollbar {
+    width: 14px;
+    height: 18px;
+    background-color: #141414;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    height: 6px;
+    border: 4px solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    border-radius: 7px;
+    background-color: $purple-light;
+    box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05),
+      inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      cursor: pointer;
     }
+  }
 
-    &::-webkit-scrollbar-thumb {
-        height: 6px;
-        border: 4px solid rgba(0, 0, 0, 0);
-        background-clip: padding-box;
-        border-radius: 7px;
-        background-color: $purple-light;
-        box-shadow:
-            inset -1px -1px 0px rgba(0, 0, 0, 0.05),
-            inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+  &::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 
-        &:hover {
-            cursor: pointer;
-        }
-    }
-
-    &::-webkit-scrollbar-button {
-        width: 0;
-        height: 0;
-        display: none;
-    }
-
-    &::-webkit-scrollbar-corner {
-        background-color: transparent;
-    }
-
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
 }
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'DM Sans', sans-serif;
-    @include scrollbar();
+  margin: 0;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  max-width: 1920px;
+  background-color: gray;
+  @include scrollbar();
 }
 
 .w-40 {
-    width: 40% !important;
+  width: 40% !important;
 }
 
 button {
-    border: 1px solid transparent;
-    border-radius: 40px;
-    padding: 0.75rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: 40px;
+  padding: 0.75rem 1.5rem;
 
-    &:hover {
-        cursor: pointer;
-    }
+  &:hover {
+    cursor: pointer;
+  }
 
-    &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 // .video-js .vjs-big-play-button {
