@@ -18,9 +18,9 @@
                 <p class="info">{{ video()?.description}}</p>
             </div>
         </div>
-        <app-vjs-player [startFromSavedTime]="startSavedTime()" [videoId]="video()!.id"
-            (currentTimeUpdated)="updateCurrentTime($event)" [currentTime]="currentTime()"
-            [qualityMessage]="sourceUpdateMessage()" [customHeight]="50" [options]="{
+        <app-vjs-player [startFromSavedTime]="videoProgressService.startSavedTime()" [videoId]="video()!.id"
+            (currentTimeUpdated)="updateCurrentTime($event)" [currentTime]="videoProgressService.currentTime()"
+            [qualityMessage]="videoQualityService.sourceUpdateMessage()" [customHeight]="50" [options]="{
             preferFullWindow: false,
             playsinline: false,
             fluid: false,
@@ -29,7 +29,7 @@
             controls: true,
             playbackRates: [0.5, 1, 1.5, 2],
             sources: [
-            { src: defaultSource(), type: 'video/mp4' }
+            { src: videoProgressService.defaultSource(), type: 'video/mp4' }
             ]
           }"></app-vjs-player>
     </div>
