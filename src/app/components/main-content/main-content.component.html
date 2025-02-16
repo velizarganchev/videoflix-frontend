@@ -3,7 +3,7 @@
     <app-video-item [video]="videoToPlay()" (favoriteVideosUpdated)="updateFavorite()"
         (closeVideoClick)="showVideo.set($event)" />
     }
-    <app-main-content-header [previewVideo]="previewVideo()" />
+    <app-main-content-header />
     <div class="main-video-content">
         @if (favoriteVideos().length > 0) {
         <div class="video-content-category-container">

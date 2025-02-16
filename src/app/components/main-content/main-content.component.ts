@@ -42,7 +42,6 @@ export class MainContentComponent implements OnInit, AfterViewChecked {
   favoriteVideos = signal<Video[]>([]);
   visibleArrows = signal<{ [key: string]: boolean }>({});
 
-  previewVideo = computed(() => this.videos()!.find(video => video.title === 'Breakout'));
   user = computed(() => this.userService.getUser());
 
   ngOnInit(): void {

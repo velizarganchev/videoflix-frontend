@@ -25,7 +25,9 @@
         <button class="preview-video-close" (click)="handelPlay()">
             <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <app-vjs-player [customHeight]="100" [options]="{
+        <app-vjs-player [startFromSavedTime]="videoProgressService.startSavedTime()" [videoId]="previewVideo()!.id"
+            (currentTimeUpdated)="updateCurrentTime($event)" [currentTime]="videoProgressService.currentTime()"
+            [qualityMessage]="videoQualityService.sourceUpdateMessage()" [customHeight]="100" [options]="{ 
             preferFullWindow: false,
             playsinline: true,
             fluid: false,
@@ -34,10 +36,7 @@
             controls: true,
             playbackRates: [0.5, 1, 1.5, 2],
             sources: [
-            { src: getVideoUrl(3), type: 'video/mp4' },
-            { src: getVideoUrl(2), type: 'video/mp4' },
-            { src: getVideoUrl(1), type: 'video/mp4' },
-            { src: getVideoUrl(0), type: 'video/mp4' }
+            { src: videoProgressService.defaultSource(), type: 'video/mp4' }
             ]
           }"></app-vjs-player>
     </div>

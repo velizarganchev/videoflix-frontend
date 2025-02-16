@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { catchError, tap, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 import { ErrorService } from './error.service';
 import { Video } from '../models/video.class';
 import { AuthService } from './auth.service';
@@ -18,10 +18,10 @@ export class VideoService {
   private authService = inject(AuthService);
 
   private httpHeaders: HttpHeaders = new HttpHeaders({
-    'Content-Type': 'application/json', 
+    'Content-Type': 'application/json',
   });
 
-  loadVideos() {
+  loadVideos(): Observable<Video[]> {
     return this.fetchVideos().pipe(
       tap({
         next: (videos) => {
@@ -31,7 +31,7 @@ export class VideoService {
     )
   }
 
-  private fetchVideos() {    
+  private fetchVideos(): Observable<Video[]> {
     return this.http.get<Video[]>(`${BASE_URL}/content/`, { headers: this.httpHeaders }).pipe(
       catchError((error) => {
         this.errorService.showError('Failed to fetch videos');
@@ -40,7 +40,7 @@ export class VideoService {
     )
   }
 
-  addToFavorite(video_id: number) {
+  addToFavorite(video_id: number): Observable<number[]> {
     return this.storeFavoriteVideo(video_id).pipe(
       tap({
         next: (favoriteVideos: number[]) => {
@@ -50,7 +50,7 @@ export class VideoService {
     )
   }
 
-  storeFavoriteVideo(video_id: number) {
+  storeFavoriteVideo(video_id: number): Observable<number[]> {
     return this.http.post<number[]>(`${BASE_URL}/content/add-favorite/`, {
       "video_id": video_id
     }, { headers: this.httpHeaders }).pipe(
