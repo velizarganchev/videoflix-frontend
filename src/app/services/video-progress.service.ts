@@ -24,7 +24,7 @@ export class VideoProgressService {
   }
 
   saveVideoProgress(videoId: number) {
-    if (videoId) {
+    if (videoId && this.currentTime() > 0) {
       localStorage.setItem(`videoProgress_${videoId}`, this.currentTime().toString());
     }
   }
@@ -37,7 +37,7 @@ export class VideoProgressService {
 
   updateVideoSource() {
     if (!this.video) return;
-    
+
     const qualityIndex = this.videoQualityService.qualityIndex();
     this.defaultSource.set(this.getVideoUrl(this.video, qualityIndex) || '');
     this.videoQualityService.clearMessage();

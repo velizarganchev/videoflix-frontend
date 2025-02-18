@@ -25,38 +25,28 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
   videoQualityService = inject(VideoQualityService);
 
   videos = computed(() => this.videosService.loadedVideos());
-  previewVideo = computed(() =>
-    this.videos()!.find((video) => video.title === 'Breakout')
-  );
+  previewVideo = computed(() => this.videos()!.find((video) => video.title === 'Breakout'));
 
   playVideo = signal<boolean>(false);
-  videoId = signal<number>(0);
 
   ngOnInit(): void {
-    this.videosService.loadVideos().subscribe({
-      next: () => {
-        this.videoProgressService.video.set(this.previewVideo()!);
-      },
-      error: (err) => {
-        console.error('Error loading videos:', err);
-      },
-      complete: () => {
-        console.log('Videos loaded', this.previewVideo());
-      },
-    });
-    console.log('previewVideo', this.previewVideo());
+    this.videosService.loadVideos().subscribe();
   }
 
   handelPlay() {
-    console.log('handelPlay', this.videoProgressService.video());
-
+    this.videoProgressService.video.set(this.previewVideo()!);
     this.playVideo.set(!this.playVideo());
 
     if (!this.playVideo()) {
+      console.log('saveVideoProgress in handle to play', this.previewVideo()!.id);
+
       this.videoProgressService.saveVideoProgress(this.previewVideo()!.id);
+      this.videoProgressService.video.set(null);
     }
 
     if (this.playVideo()) {
+      console.log('handelPlay', this.videoProgressService.video());
+
       this.videoQualityService.sourceUpdateMessage.set(
         'Optimizing video for your screen.'
       );
@@ -72,6 +62,8 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.previewVideo()?.id) {
+      console.log('saveVideoProgress in ngOnDestroy', this.previewVideo()!.id);
+
       this.videoProgressService.saveVideoProgress(this.previewVideo()!.id);
     }
   }
