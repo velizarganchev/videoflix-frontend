@@ -37,10 +37,10 @@ export class ForgotPasswordComponent {
 
   ngOnInit() {
     const subscription = this.authService.loadUserEmails().subscribe({
-      next: (emails) => {
+      next: () => {
         this.forgotPasswordForm
           .get('email')
-          ?.setAsyncValidators(validateEmail(emails));
+          ?.setAsyncValidators(validateEmail(this.authService.allUserEmails()));
       },
       error: (error) => {
         console.error(error);

@@ -45,8 +45,6 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
     }
 
     if (this.playVideo()) {
-      console.log('handelPlay', this.videoProgressService.video());
-
       this.videoQualityService.sourceUpdateMessage.set(
         'Optimizing video for your screen.'
       );
