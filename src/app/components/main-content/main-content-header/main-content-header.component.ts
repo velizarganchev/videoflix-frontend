@@ -38,8 +38,6 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
     this.playVideo.set(!this.playVideo());
 
     if (!this.playVideo()) {
-      console.log('saveVideoProgress in handle to play', this.previewVideo()!.id);
-
       this.videoProgressService.saveVideoProgress(this.previewVideo()!.id);
       this.videoProgressService.video.set(null);
     }

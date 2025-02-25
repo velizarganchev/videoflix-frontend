@@ -9,7 +9,6 @@ import {
   viewChildren,
   AfterViewChecked,
   HostListener,
-  viewChild,
 } from '@angular/core';
 import { VideoItemComponent } from '../video-item/video-item.component';
 import { VideoService } from '../../services/video.service';
