@@ -48,7 +48,6 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
       );
       this.videoProgressService.loadVideoProgress(this.previewVideo()!.id);
       this.videoQualityService.clearMessage();
-      this.videoProgressService.updateVideoSource();
     }
   }
 

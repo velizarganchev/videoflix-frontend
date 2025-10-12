@@ -4,9 +4,9 @@ import { User } from '../models/user.class';
 import { ErrorService } from './error.service';
 import { catchError, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { use } from 'video.js/dist/types/tech/middleware';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = 'https://api.videoflix-velizar-ganchev-backend.com/users';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -76,7 +76,7 @@ export class AuthService {
 
   fetchAllUser() {
     return this.http
-      .get<[]>(`${BASE_URL}/users/profiles/`, { headers: this.httpHeaders })
+      .get<[]>(`${BASE_URL}/profiles/`, { headers: this.httpHeaders })
       .pipe(
         catchError((error) => {
           this.errorService.showError('Failed to fetch user emails');
@@ -132,7 +132,7 @@ export class AuthService {
   private fetchUser(email: string, password: string) {
     return this.http
       .post<User>(
-        `${BASE_URL}/users/login/`,
+        `${BASE_URL}/login/`,
         { email, password },
         { headers: this.httpHeaders }
       )
@@ -151,7 +151,7 @@ export class AuthService {
   ) {
     return this.http
       .post<User>(
-        `${BASE_URL}/users/register/`,
+        `${BASE_URL}/register/`,
         { email, password, confirm_password },
         { headers: this.httpHeaders }
       )
@@ -166,7 +166,7 @@ export class AuthService {
   private forgotPasswordUser(email: string) {
     return this.http
       .post(
-        `${BASE_URL}/users/forgot-password/`,
+        `${BASE_URL}/forgot-password/`,
         { email },
         { headers: this.httpHeaders }
       )
@@ -183,7 +183,7 @@ export class AuthService {
   private resetPasswordUser(uid: string, token: string, new_password: string) {
     return this.http
       .post(
-        `${BASE_URL}/users/reset-password/`,
+        `${BASE_URL}/reset-password/`,
         { uid, token, new_password },
         { headers: this.httpHeaders }
       )

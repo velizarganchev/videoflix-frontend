@@ -18,7 +18,8 @@
                 <p class="info">{{ video()?.description}}</p>
             </div>
         </div>
-        <app-vjs-player [startFromSavedTime]="videoProgressService.startSavedTime()" [videoId]="video()!.id"
+        <app-vjs-player *ngIf="videoProgressService.defaultSource()"
+            [startFromSavedTime]="videoProgressService.startSavedTime()" [videoId]="video()!.id"
             (currentTimeUpdated)="updateCurrentTime($event)" [currentTime]="videoProgressService.currentTime()"
             [qualityMessage]="videoQualityService.sourceUpdateMessage()" [customHeight]="50" [options]="{
             preferFullWindow: false,

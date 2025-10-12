@@ -37,7 +37,6 @@ export class VideoItemComponent implements OnInit, AfterViewInit, OnDestroy {
       this.videoProgressService.video.set(this.video()!);
       this.videoProgressService.loadVideoProgress(this.videoId());
       this.videoQualityService.clearMessage();
-      this.videoProgressService.updateVideoSource();
     }
   }
 
@@ -80,7 +79,7 @@ export class VideoItemComponent implements OnInit, AfterViewInit, OnDestroy {
   getImageUrl(): string {
     const video = this.video();
     if (video && video.image_file) {
-      return `http://127.0.0.1:8000${video.image_file}`;
+      return video.image_file;
     }
     return '';
   }

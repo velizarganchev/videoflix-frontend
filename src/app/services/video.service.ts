@@ -5,7 +5,7 @@ import { ErrorService } from './error.service';
 import { Video } from '../models/video.class';
 import { AuthService } from './auth.service';
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = 'https://api.videoflix-velizar-ganchev-backend.com/content';
 @Injectable({
   providedIn: 'root',
 })
@@ -33,7 +33,7 @@ export class VideoService {
 
   private fetchVideos(): Observable<Video[]> {
     return this.http
-      .get<Video[]>(`${BASE_URL}/content/`, { headers: this.httpHeaders })
+      .get<Video[]>(`${BASE_URL}`, { headers: this.httpHeaders })
       .pipe(
         catchError((error) => {
           this.errorService.showError('Failed to fetch videos');
@@ -55,7 +55,7 @@ export class VideoService {
   storeFavoriteVideo(video_id: number): Observable<number[]> {
     return this.http
       .post<number[]>(
-        `${BASE_URL}/content/add-favorite/`,
+        `${BASE_URL}/add-favorite/`,
         {
           video_id: video_id,
         },
@@ -68,4 +68,20 @@ export class VideoService {
         })
       );
   }
+
+  getSignedVideoUrl(
+    videoId: number,
+    quality?: '120p' | '360p' | '720p' | '1080p'
+  ): Observable<{ url: string }> {
+    const q = quality ? `?quality=${quality}` : '';
+    return this.http
+      .get<{ url: string }>(`${BASE_URL}/video-url/${videoId}/${q}/`)
+      .pipe(
+        catchError((error) => {
+          this.errorService.showError('Failed to fetch signed video URL');
+          return throwError(() => new Error('Failed to fetch signed video URL'));
+        })
+      );
+  }
+
 }

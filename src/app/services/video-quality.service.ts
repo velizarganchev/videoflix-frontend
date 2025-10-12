@@ -1,4 +1,4 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +15,9 @@ export class VideoQualityService {
   private initializeQualityListener() {
     const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
     if (connection) {
-      this.updateQualityIndex(connection.downlink); // Initial setzen
+      this.updateQualityIndex(connection.downlink);
       connection.addEventListener('change', () => {
-        this.updateQualityIndex(connection.downlink); // Bei Änderung aktualisieren
+        this.updateQualityIndex(connection.downlink);
       });
     }
   }

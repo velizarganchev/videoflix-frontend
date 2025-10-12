@@ -19,7 +19,7 @@
                 <div class="video-content-category-scroll" #favoriteScrollContainer [attr.data-category]="'favorite'">
                     @for (video of favoriteVideos(); track $index) {
                     <div class="video-content-item" (click)="handleVideoClick(true, video)">
-                        <img [src]="'http://127.0.0.1:8000/' + video.image_file" alt="Video">
+                        <img [src]="video.image_file" alt="Video">
                     </div>
                     }
                 </div>
@@ -47,7 +47,7 @@
                 <div class="video-content-category-scroll" #scrollContainer [attr.data-category]="videos.key">
                     @for (video of groupedVideos()[videos.key]; track $index) {
                     <div class="video-content-item" (click)="handleVideoClick(true, video)">
-                        <img [src]="'http://127.0.0.1:8000/' + video.image_file" alt="Video">
+                        <img [src]="video.image_file" alt="Video">
                     </div>
                     }
                 </div>
