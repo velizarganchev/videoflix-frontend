@@ -1,43 +1,156 @@
-@import '../../../styles.scss';
+@import "../../../styles.scss";
 
-$nav-height: 6.6rem;
-$nav-padding: 2.4rem;
+$nav-height-desktop: 6.6rem;
+$nav-height-mobile: 5.6rem;
+$nav-padding-desktop: 2.4rem;
+$nav-padding-tablet: 1.6rem;
+$nav-padding-mobile: 1rem;
 $transition-duration: 0.3s;
 
 :host {
-    width: 100%;
-    max-width: 1920px;
-    height: $nav-height;
+  width: 100%;
+  max-width: 1920px;
+  height: $nav-height-desktop;
+  display: flex;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+
+  nav {
     display: flex;
-    position: fixed;
-    z-index: 1000;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 $nav-padding-desktop;
+    background-color: transparent;
+    color: white;
+    transition: background-color $transition-duration ease,
+      padding $transition-duration ease, height $transition-duration ease;
 
-    nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 0 $nav-padding;
-        background-color: transparent;
-        color: white;
-        transition: background-color $transition-duration ease;
+    .logo {
+      /* за да подравним изображението вертикално */
+      display: flex;
+      align-items: center;
 
-        .login-btn,
-        .logout-btn {
-            font-size: 1rem;
-            font-weight: 700;
-            color: white;
-            background-color: $purple;
-            transition: background-color $transition-duration ease, border $transition-duration ease;
+      /* ако някога показваш текстово лого вместо img */
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
 
-            &:hover {
-                background-color: darken($purple, 10%);
-                border: 1px solid white;
-            }
-        }
+      /* ЕТО ТУК: лимит за големина на самото изображение */
+      img {
+        max-height: 2.4rem; /* ~38px на десктоп */
+        height: auto;
+        width: auto;
+        display: block;
+      }
     }
+
+    .login-btn,
+    .logout-btn {
+      font-size: 1rem;
+      font-weight: 700;
+      color: white;
+      background-color: $purple;
+      transition: background-color $transition-duration ease,
+        border $transition-duration ease, padding $transition-duration ease,
+        font-size $transition-duration ease;
+
+      &:hover {
+        background-color: darken($purple, 10%);
+        border: 1px solid white;
+      }
+    }
+  }
 }
 
+/* Скролнато състояние (фон) */
 .navigation--scrolled {
-    backdrop-filter: contrast(0.8);
+  backdrop-filter: contrast(0.8);
+}
+
+/* ============= RESPONSIVE BREAKPOINTS ============= */
+
+/* <= 1024px : лаптопи / таблет landscape */
+@media (max-width: 1024px) {
+  :host {
+    nav {
+      padding: 0 $nav-padding-tablet;
+
+      .logo {
+        font-size: 1.3rem;
+
+        img {
+          max-height: 2rem; /* ~32px */
+        }
+      }
+
+      .login-btn,
+      .logout-btn {
+        font-size: 0.9rem;
+        font-weight: 700;
+        padding: 0.6rem 1.2rem;
+      }
+    }
+  }
+}
+
+/* <= 768px : таблет портрет / големи телефони */
+@media (max-width: 768px) {
+  :host {
+    height: $nav-height-mobile;
+
+    nav {
+      padding: 0 $nav-padding-tablet;
+      min-height: $nav-height-mobile;
+
+      .logo {
+        font-size: 1.1rem;
+
+        img {
+          max-height: 1.8rem; /* ~28-29px */
+        }
+      }
+
+      .login-btn,
+      .logout-btn {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 0.4rem;
+      }
+    }
+  }
+}
+
+/* <= 480px : малки телефони */
+@media (max-width: 480px) {
+  :host {
+    height: $nav-height-mobile;
+
+    nav {
+      padding: 0 $nav-padding-mobile;
+      min-height: $nav-height-mobile;
+      gap: 0.8rem;
+      flex-wrap: nowrap;
+
+      .logo {
+        font-size: 1rem;
+
+        img {
+          max-height: 1.5rem; /* ~24px логото става компактно */
+        }
+      }
+
+      .login-btn,
+      .logout-btn {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        line-height: 1.2;
+        border-radius: 0.4rem;
+      }
+    }
+  }
 }

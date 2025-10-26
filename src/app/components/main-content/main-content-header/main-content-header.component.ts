@@ -25,7 +25,7 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
   videoQualityService = inject(VideoQualityService);
 
   videos = computed(() => this.videosService.loadedVideos());
-  previewVideo = computed(() => this.videos()!.find((video) => video.title === 'Breakout'));
+  previewVideo = computed(() => this.videos()!.find((video) => video.title === 'Neon Pulse: The Awakening'));
 
   playVideo = signal<boolean>(false);
 
