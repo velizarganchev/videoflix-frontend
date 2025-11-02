@@ -1,33 +1,70 @@
-@import '../../../styles.scss';
+@import "../../../styles.scss";
 
 footer {
-    width: 100%;
-    background-color: transparent;
-    height: 4.6rem;
+  width: 100%;
+  background-color: transparent;
+  height: 4.6rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  background: black;
+
+  .footer-links {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
-    background: black;
+    gap: 3rem;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-decoration: none;
+    padding-right: 2rem;
 
+    a {
+      color: white;
+      text-decoration: none;
 
-    .footer-links {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 3rem;
-        color: white;
-        font-size: 1.2rem;
-        font-weight: 500;
-        text-decoration: none;
-        padding-right: 2rem;
-
-        a {
-            color: white;
-            text-decoration: none;
-
-            &:hover {
-                color: $purple;
-            }
-        }
+      &:hover {
+        color: $purple;
+      }
     }
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Responsive breakpoints – nested inside footer for SCSS build
+     xs: 360px | sm: 480px | md: 768px | lg: 1024px | xl: 1280px
+     ───────────────────────────────────────────────────────────── */
+
+  @media (max-width: 1280px) {
+    .footer-links {
+      font-size: 1.15rem;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .footer-links {
+      font-size: 1.05rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-links {
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    justify-content: center !important;
+    .footer-links {
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .footer-links {
+      font-size: 0.75rem;
+    }
+  }
 }
+/* ─────────────────────────────────────────────────────────────
+   End of responsive breakpoints */

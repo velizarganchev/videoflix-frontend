@@ -1,73 +1,104 @@
+@import "../../../styles.scss";
+
 .imprint {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 4.6rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 4.6rem);
 
-    .imprint-container {
-        color: white;
-        background: #595959;
-        padding: 2rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
-        max-width: 31.25rem;
-        width: 100%;
-        text-align: center;
+  .imprint-container {
+    color: white;
+    background: #595959;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.1);
+    max-width: 31.25rem;
+    width: 100%;
+    text-align: center;
 
-        .goback-container {
-            display: flex;
+    .goback-container {
+      display: flex;
 
-            a {
-                font-size: 2rem;
-                transition: all 0.3s ease-in-out;
+      a {
+        font-size: 2rem;
+        transition: all 0.3s ease-in-out;
 
-                &:hover {
-                    cursor: pointer;
-                    transform: scale(1.3);
-                }
-            }
+        &:hover {
+          cursor: pointer;
+          transform: scale(1.3);
         }
-
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .imprint-content {
-            margin-bottom: 1.5rem;
-
-            .imprint-name {
-                font-weight: bold;
-                font-size: 1.2rem;
-                margin-bottom: 0.5rem;
-            }
-
-            .imprint-address p {
-                margin: 0;
-                font-size: 1rem;
-            }
-        }
-
-        .imprint-contact {
-            h4 {
-                font-size: 1.2rem;
-                margin-bottom: 0.5rem;
-            }
-
-            p {
-                font-size: 1rem;
-                margin: 0;
-
-                a {
-                    color: #007bff;
-                    text-decoration: none;
-                    font-weight: bold;
-
-                    &:hover {
-                        text-decoration: underline;
-                    }
-                }
-            }
-        }
+      }
     }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .imprint-content {
+      margin-bottom: 1.5rem;
+
+      .imprint-name {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .imprint-address p {
+        margin: 0;
+        font-size: 1rem;
+      }
+    }
+
+    .imprint-contact {
+      h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        font-size: 1rem;
+        margin: 0;
+
+        a {
+          color: #007bff;
+          text-decoration: none;
+          font-weight: bold;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Small screens fine-tuning (≤380px)
+   ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 380px) {
+  .imprint .imprint-container {
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .goback-container a {
+      font-size: 1.6rem;
+    }
+
+    .imprint-content .imprint-name,
+    .imprint-contact h4 {
+      font-size: 1rem;
+    }
+
+    .imprint-content .imprint-address p,
+    .imprint-contact p {
+      font-size: 0.9rem;
+    }
+  }
+}
+/* ─────────────────────────────────────────────────────────────
+   End of responsive breakpoints */
+/* ─────────────────────────────────────────────────────────────

@@ -1,67 +1,77 @@
 <section class="signup-container">
-    @if (!successFullSignup()) {
-    <div class="signup-form-container">
-        <h1>Sign Up</h1>
-        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-            <div class="input-container">
-                <input type="email" placeholder="Email Address" formControlName="email" />
-            </div>
-            @if (signupForm.controls.email.invalid) {
-            <p>
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Email invalid or existing.
-            </p>
+  @if (!successFullSignup()) {
+  <div class="signup-form-container">
+    <h1>Sign Up</h1>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+      <div class="input-container">
+        <input
+          type="email"
+          placeholder="Email Address"
+          formControlName="email"
+        />
+      </div>
+      @if (signupForm.controls.email.invalid) {
+      <p>
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Email invalid or existing.
+      </p>
+      }
+      <div class="passwords-cpntainer" formGroupName="passwords">
+        <div class="input-container">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Enter a Password"
+          />
+          <button type="button" (click)="togglePasswordVisibility('password')">
+            @if (!showPassword()){
+            <i class="fa-solid fa-eye-slash"></i>
+            }@else {
+            <i class="fa-regular fa-eye"></i>
             }
-            <div class="passwords-cpntainer" formGroupName="passwords">
-                <div class="input-container">
-                    <input [type]="showPassword() ? 'text' : 'password'" formControlName="password"
-                        placeholder="Enter a Password" />
-                    <button type="button" (click)="togglePasswordVisibility('password')">
-                        @if (!showPassword){
-                        <i class="fa-solid fa-eye-slash"></i>
-                        }@else {
-                        <i class="fa-regular fa-eye"></i>
-                        }
-                    </button>
-                </div>
-                @if (signupForm.controls.passwords.get('password')?.invalid &&
-                signupForm.controls.passwords.get('password')?.touched) {
-                <p>
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    Passwords must be at least 6 characters long.
-                </p>
-                }
-                <div class="input-container">
-                    <input formControlName="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'"
-                        placeholder="Confirm Password" />
-                    <button type="button" (click)="togglePasswordVisibility('confirmPassword')">
-                        @if (!showConfirmPassword){
-                        <i class="fa-solid fa-eye-slash"></i>
-                        }@else {
-                        <i class="fa-regular fa-eye"></i>
-                        }
-                    </button>
-                </div>
-                @if (signupForm.controls.passwords.errors &&
-                signupForm.controls.passwords.get('password')?.touched &&
-                signupForm.controls.passwords.get('confirmPassword')?.touched) {
-                <p>
-                    <i class="fa-solid fa-triangle-exclamation"></i>
-                    Passwords must match.
-                </p>
-                }
-            </div>
-            <button type="submit" [disabled]="signupForm.invalid">
-                @if (!isSingupLoading()) {
-                Get Started
-                }@else {
-                <app-loading-spinner></app-loading-spinner>
-                }
-            </button>
-        </form>
-    </div>
-    }
-    @else if (successFullSignup()) {
-    <app-successful-register [user]="userData()" />
-    }
+          </button>
+        </div>
+        @if (signupForm.controls.passwords.get('password')?.invalid &&
+        signupForm.controls.passwords.get('password')?.touched) {
+        <p>
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Passwords must be at least 6 characters long.
+        </p>
+        }
+        <div class="input-container">
+          <input
+            formControlName="confirmPassword"
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            placeholder="Confirm Password"
+          />
+          <button
+            type="button"
+            (click)="togglePasswordVisibility('confirmPassword')"
+          >
+            @if (!showConfirmPassword()){
+            <i class="fa-solid fa-eye-slash"></i>
+            }@else {
+            <i class="fa-regular fa-eye"></i>
+            }
+          </button>
+        </div>
+        @if (signupForm.controls.passwords.errors &&
+        signupForm.controls.passwords.get('password')?.touched &&
+        signupForm.controls.passwords.get('confirmPassword')?.touched) {
+        <p>
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Passwords must match.
+        </p>
+        }
+      </div>
+      <button type="submit" [disabled]="signupForm.invalid">
+        @if (!isSingupLoading()) { Get Started }@else {
+        <app-loading-spinner></app-loading-spinner>
+        }
+      </button>
+    </form>
+  </div>
+  } @else if (successFullSignup()) {
+  <app-successful-register [user]="userData()" />
+  }
 </section>

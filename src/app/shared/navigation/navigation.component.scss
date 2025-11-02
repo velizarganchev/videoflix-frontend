@@ -29,18 +29,14 @@ $transition-duration: 0.3s;
       padding $transition-duration ease, height $transition-duration ease;
 
     .logo {
-      /* за да подравним изображението вертикално */
       display: flex;
       align-items: center;
-
-      /* ако някога показваш текстово лого вместо img */
       font-size: 1.5rem;
       font-weight: 700;
       line-height: 1;
 
-      /* ЕТО ТУК: лимит за големина на самото изображение */
       img {
-        max-height: 2.4rem; /* ~38px на десктоп */
+        max-height: 2.4rem;
         height: auto;
         width: auto;
         display: block;
@@ -65,14 +61,13 @@ $transition-duration: 0.3s;
   }
 }
 
-/* Скролнато състояние (фон) */
 .navigation--scrolled {
   backdrop-filter: contrast(0.8);
 }
 
 /* ============= RESPONSIVE BREAKPOINTS ============= */
 
-/* <= 1024px : лаптопи / таблет landscape */
+/* <= 1024px : laptop / tablet landscape */
 @media (max-width: 1024px) {
   :host {
     nav {
@@ -82,7 +77,7 @@ $transition-duration: 0.3s;
         font-size: 1.3rem;
 
         img {
-          max-height: 2rem; /* ~32px */
+          max-height: 2rem;
         }
       }
 
@@ -96,7 +91,7 @@ $transition-duration: 0.3s;
   }
 }
 
-/* <= 768px : таблет портрет / големи телефони */
+/* <= 768px : tablet portrait / large phones */
 @media (max-width: 768px) {
   :host {
     height: $nav-height-mobile;
@@ -109,7 +104,7 @@ $transition-duration: 0.3s;
         font-size: 1.1rem;
 
         img {
-          max-height: 1.8rem; /* ~28-29px */
+          max-height: 1.8rem;
         }
       }
 
@@ -124,7 +119,7 @@ $transition-duration: 0.3s;
   }
 }
 
-/* <= 480px : малки телефони */
+/* <= 480px : small phones */
 @media (max-width: 480px) {
   :host {
     height: $nav-height-mobile;
@@ -139,7 +134,7 @@ $transition-duration: 0.3s;
         font-size: 1rem;
 
         img {
-          max-height: 1.5rem; /* ~24px логото става компактно */
+          max-height: 1rem;
         }
       }
 
@@ -154,3 +149,5 @@ $transition-duration: 0.3s;
     }
   }
 }
+/* ─────────────────────────────────────────────────────────────
+   End of responsive breakpoints */

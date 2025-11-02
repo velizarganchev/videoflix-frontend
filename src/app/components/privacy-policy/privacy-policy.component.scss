@@ -1,87 +1,115 @@
 @import "../../../styles.scss";
 
 section {
-    width: 100%;
-    height: calc(100vh - 4.6rem);
+  width: 100%;
+  height: calc(100vh - 4.6rem);
 
-    .content-wrapper {
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5.5rem;
+
+    .content-main {
+      background: #595959;
+      color: white;
+      margin: 0 0.4rem;
+      padding: 1.875rem;
+      border-radius: 0.625rem;
+      box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
+      max-width: 50rem;
+      max-height: 31.25rem;
+
+      .goback {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        padding-top: 5.5rem;
+        margin-bottom: 1.25rem;
 
-        .content-main {
-            background: #595959;
-            color: white;
-            margin: 0 0.4rem 0 0.4rem;
-            padding: 1.875rem;
-            border-radius: 0.625rem;
-            box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.1);
-            max-width: 50rem;
-            max-height: 31.25rem;
+        i {
+          font-size: 2rem;
+          transition: all 0.3s ease-in-out;
 
-            .goback {
-                display: flex;
-                align-items: center;
-                margin-bottom: 1.25rem;
-
-                i {
-                    font-size: 2rem;
-                    transition: all 0.3s ease-in-out;
-
-                    &:hover {
-                        cursor: pointer;
-                        transform: scale(1.3);
-                    }
-                }
-
-            }
-
-            h1 {
-                text-align: center;
-                font-size: 1.5rem;
-                margin-bottom: 1.25rem;
-            }
-
-            .content-scrollbox {
-                max-height: 26.25rem;
-                overflow-y: auto;
-                padding-right: 0.625rem;
-                @include scrollbar();
-
-                h2 {
-                    font-size: 1.25rem;
-                    margin-top: 1.25rem;
-                }
-
-                h3 {
-                    font-size: 1.125rem;
-                    margin-top: 0.9375rem;
-                }
-
-                p {
-                    font-size: 1rem;
-                    line-height: 1.6;
-                }
-
-                ul {
-                    padding-left: 1.25rem;
-
-                    li {
-                        font-size: 1rem;
-                        margin-bottom: 0.3125rem;
-                    }
-                }
-
-                .white {
-                    font-weight: bold;
-                }
-
-                .email {
-                    font-weight: bold;
-                    color: #007bff;
-                }
-            }
+          &:hover {
+            cursor: pointer;
+            transform: scale(1.3);
+          }
         }
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .content-scrollbox {
+        max-height: 26.25rem;
+        overflow-y: auto;
+        padding-right: 0.625rem;
+        @include scrollbar();
+
+        h2 {
+          font-size: 1.25rem;
+          margin-top: 1.25rem;
+        }
+
+        h3 {
+          font-size: 1.125rem;
+          margin-top: 0.9375rem;
+        }
+
+        p {
+          font-size: 1rem;
+          line-height: 1.6;
+        }
+
+        ul {
+          padding-left: 1.25rem;
+
+          li {
+            font-size: 1rem;
+            margin-bottom: 0.3125rem;
+          }
+        }
+
+        .white {
+          font-weight: bold;
+        }
+
+        .email {
+          font-weight: bold;
+          color: #007bff;
+        }
+      }
     }
+  }
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Extra small fine-tuning (≤370px)
+   ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 370px) {
+  section .content-wrapper .content-main {
+    padding: 1.6rem 1.3rem;
+  }
+
+  section .content-wrapper .content-main h1 {
+    font-size: 1.25rem;
+  }
+
+  section .content-wrapper .content-main .content-scrollbox h2 {
+    font-size: 1.1rem;
+  }
+
+  section .content-wrapper .content-main .content-scrollbox h3 {
+    font-size: 1rem;
+  }
+
+  section .content-wrapper .content-main .content-scrollbox p,
+  section .content-wrapper .content-main .content-scrollbox li {
+    font-size: 0.9rem;
+  }
+}
+/* ─────────────────────────────────────────────────────────────
+   End of responsive breakpoints */
