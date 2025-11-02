@@ -1,0 +1,11 @@
+{
+  "entryPoints": ["src/app"],
+  "out": "docs",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "hideGenerator": true,
+  "readme": "none",
+  "tsconfig": "tsconfig.app.json"
+}

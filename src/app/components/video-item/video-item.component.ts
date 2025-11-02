@@ -86,6 +86,6 @@ export class VideoItemComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.videoProgressService.saveVideoProgress(this.videoId());
-    this.videoProgressService.video.set(null);
+    this.videoProgressService.reset();
   }
 }

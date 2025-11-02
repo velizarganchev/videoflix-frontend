@@ -1,14 +1,11 @@
-<div class="main-content-header" [style.hide-scroll]="playVideo()">
+<div class="main-content-header" [class.hide-scroll]="playVideo()">
     <div class="video-preview-container">
-        <video class="bg-video" autoplay loop muted>
-            <source src="assets/videos/Breakout.mp4" type="video/mp4" />
-
-            Download the
-            <a href="/media/cc0-videos/flower.webm">WEBM</a>
-            or
-            <a href="/media/cc0-videos/flower.mp4">MP4</a>
-            video.
+        <video class="bg-video" *ngIf="headerVideoSrc()" autoplay loop muted playsinline>
+            <source [src]="headerVideoSrc()" type="video/mp4" />
         </video>
+
+        <div class="bg-placeholder" *ngIf="!headerVideoSrc()"></div>
+
         <div class="video-preview-info">
             <h1>{{ previewVideo()?.title }}</h1>
             <div class="video-preview-info-text">
@@ -20,25 +17,28 @@
             </button>
         </div>
     </div>
+
     @if (playVideo()) {
     <div class="preview-video-container">
         <button class="preview-video-close" (click)="handelPlay()">
             <i class="fa-solid fa-arrow-left"></i>
         </button>
-        <app-vjs-player [startFromSavedTime]="videoProgressService.startSavedTime()" [videoId]="previewVideo()!.id"
+
+        <app-vjs-player *ngIf="videoProgressService.defaultSource()"
+            [startFromSavedTime]="videoProgressService.startSavedTime()" [videoId]="previewVideo()!.id"
             (currentTimeUpdated)="updateCurrentTime($event)" [currentTime]="videoProgressService.currentTime()"
-            [qualityMessage]="videoQualityService.sourceUpdateMessage()" [customHeight]="100" [options]="{ 
-            preferFullWindow: false,
-            playsinline: true,
-            fluid: false,
-            autoplay: true,
-            muted: false,
-            controls: true,
-            playbackRates: [0.5, 1, 1.5, 2],
-            sources: [
-            { src: videoProgressService.defaultSource(), type: 'video/mp4' }
-            ]
-          }"></app-vjs-player>
+            [qualityMessage]="videoQualityService.sourceUpdateMessage()" [customHeight]="100" [options]="{
+        preferFullWindow: false,
+        playsinline: false,
+        fluid: false,
+        autoplay: false,
+        muted: false,
+        controls: true,
+        playbackRates: [0.5, 1, 1.5, 2],
+        sources: [
+          { src: videoProgressService.defaultSource(), type: 'video/mp4' }
+        ]
+      }"></app-vjs-player>
     </div>
     }
 </div>
