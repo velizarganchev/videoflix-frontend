@@ -17,6 +17,10 @@ This project uses Angular CLI 18.2.x. It features a Video.js-based player with t
 The backend service for this project can be found here:  
 👉 [Videoflix Backend (Django + DRF)](https://github.com/velizarganchev/videoflix-backend)
 
+## 🌍 Live Demo
+Check out the live production site here:  
+👉 [Videoflix Live App](https://videoflix.velizar-ganchev.com/start-site)
+
 ## 🚀 Development server
 Run ng serve for a dev server. Navigate to http://localhost:4200/. The application will automatically reload if you change any of the source files.
 
@@ -47,5 +51,7 @@ To get more help on the Angular CLI use ng help or check out the Angular CLI Ove
 - Unit tests failing unexpectedly: Clear caches (remove node_modules and package-lock.json), then reinstall and rerun tests.
 - Documentation not visible: Build TypeDoc locally and serve the docs folder, or visit the hosted docs at https://velizarganchev.github.io/videoflix-frontend/.
 - Video player styling issues: Confirm Video.js and any theme styles are correctly included via global styles or Angular.json.
+
+---
 
 🏁 Made with ❤️ using Angular 18 and Video.js — © 2025 Velizar Ganchev.
