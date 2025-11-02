@@ -113,6 +113,8 @@ export class VideoProgressService {
 
   /**
    * Persist the current playback position to localStorage for a given video ID.
+   * Uses a deterministic key: `videoProgress_<id>`.
+   *
    * @param videoId The video identifier.
    */
   saveVideoProgress(videoId: number): void {
@@ -123,7 +125,8 @@ export class VideoProgressService {
 
   /**
    * Load a persisted playback position from localStorage for a given video ID.
-   * Sets both `currentTime` and `startSavedTime`.
+   * Sets both `currentTime` and `startSavedTime` (true if a saved time exists).
+   *
    * @param videoId The video identifier.
    */
   loadVideoProgress(videoId: number): void {
@@ -134,7 +137,8 @@ export class VideoProgressService {
 
   /**
    * Switch the target quality by index (0..3).
-   * 0 -> 120p, 1 -> 360p, 2 -> 720p, 3 -> 1080p
+   * Mapping: 0 → 120p, 1 → 360p, 2 → 720p, 3 → 1080p.
+   *
    * @param index Quality index (clamped to 0..3).
    */
   switchQuality(index: number): void {

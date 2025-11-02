@@ -6,7 +6,10 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "docs:build": "typedoc --options typedoc.json",
+    "docs:serve": "serve docs -l 8080",
+    "docs": "npm run docs:build && npm run docs:serve"
   },
   "private": true,
   "dependencies": {

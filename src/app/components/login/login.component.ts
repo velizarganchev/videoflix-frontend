@@ -4,6 +4,18 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
 
+/**
+ * Login component.
+ *
+ * Handles user authentication, including:
+ * - Email/password login form
+ * - "Remember Me" functionality (localStorage)
+ * - Loading spinner and password visibility toggle
+ * - Navigation to main content after successful login
+ *
+ * Selector: `app-login`
+ * Standalone: `true`
+ */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -12,17 +24,54 @@ import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-sp
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
+  /**
+   * Reference to the login form in the template (`#loginForm`).
+   * Used for programmatic control over form fields.
+   */
   private form = viewChild.required<NgForm>('loginForm');
 
+  /**
+   * Authentication service for handling user login requests.
+   */
   authService = inject(AuthService);
+
+  /**
+   * Angular DestroyRef for registering cleanup logic (unsubscribe, etc.).
+   */
   destroyRef = inject(DestroyRef);
+
+  /**
+   * Router instance used for post-login navigation.
+   */
   router = inject(Router);
 
+  /**
+   * Signal controlling password visibility (true = visible).
+   */
   showPassword = signal<boolean>(false);
+
+  /**
+   * Signal controlling the loading spinner state.
+   */
   isloading = signal<boolean>(false);
+
+  /**
+   * "Remember Me" checkbox value. When true, stores credentials in localStorage.
+   */
   rememberMe = false;
+
+  /**
+   * Data loaded from localStorage if the user previously enabled "Remember Me".
+   * Contains `email` and `password` if available.
+   */
   rememberMeData = localStorage.getItem('rememberMe') ? JSON.parse(localStorage.getItem('rememberMe')!) : null;
 
+  /**
+   * Constructor lifecycle.
+   *
+   * After the next render, restores remembered credentials (if any)
+   * into the login form fields.
+   */
   constructor() {
     afterNextRender(() => {
       if (this.rememberMeData) {
@@ -34,13 +83,35 @@ export class LoginComponent {
     });
   }
 
+  /**
+   * Toggles password visibility in the form.
+   *
+   * @param field - The form field name to toggle (expected: `'password'`).
+   *
+   * @example
+   * this.togglePasswordVisibility('password');
+   */
   togglePasswordVisibility(field: string) {
-
     if (field === 'password') {
       this.showPassword.set(!this.showPassword());
     }
   }
 
+  /**
+   * Handles login form submission.
+   *
+   * Behavior:
+   * - Validates the form.
+   * - Sets the loading spinner.
+   * - Calls the authentication service with the provided credentials.
+   * - Stores credentials if "Remember Me" is enabled.
+   * - Navigates to `/main-content` on success.
+   * - Resets form after short delay.
+   *
+   * All subscriptions are cleaned up on component destroy.
+   *
+   * @param formData - The `NgForm` instance representing the login form.
+   */
   onSubmit(formData: NgForm) {
     if (formData.form.valid) {
       this.isloading.set(true);
@@ -71,6 +142,7 @@ export class LoginComponent {
       this.destroyRef.onDestroy(() => {
         subscription.unsubscribe();
       });
+
       setTimeout(() => {
         formData.form.reset();
       }, 1000);
