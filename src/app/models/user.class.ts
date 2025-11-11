@@ -38,16 +38,6 @@ export class User {
     favorite_videos: any[];
 
     /**
-     * User's password. Typically handled securely and never stored in plain text.
-     */
-    password: string;
-
-    /**
-     * Authentication token used for API requests.
-     */
-    token: string;
-
-    /**
      * Creates a new instance of the `User` class.
      *
      * Initializes all user properties from the provided object,
@@ -65,7 +55,5 @@ export class User {
         this.phone = obj?.phone ?? null;
         this.address = obj?.address ?? null;
         this.favorite_videos = obj?.favorite_videos ?? [];
-        this.password = obj?.password ?? '';
-        this.token = obj?.token ?? '';
     }
 }

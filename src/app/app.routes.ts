@@ -1,6 +1,5 @@
 import { inject } from '@angular/core';
 import { AuthService } from './services/auth.service';
-import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
 import { Routes, RedirectCommand, CanMatchFn, Router } from '@angular/router';
 import { StartSiteComponent } from './components/start-site/start-site.component';
 import { SignupComponent } from './components/signup/signup.component';
@@ -12,55 +11,6 @@ import { NotFoundComponent } from './shared/not-found/not-found.component';
 import { PlaygroundComponent } from './components/playground/playground.component';
 import { ImprintComponent } from './components/imprint/imprint.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
-
-/**
- * Authentication HTTP interceptor.
- *
- * Automatically attaches a user's authentication token (`Authorization: Token <token>`)
- * to all outgoing HTTP requests directed to the Videoflix backend API.
- *
- * Requests targeting other domains remain unmodified.
- *
- * @param req - The outgoing HTTP request.
- * @param next - The next handler in the HTTP request chain.
- * @returns The modified or original request observable.
- *
- * @example
- * provideHttpClient(withInterceptors([authInterceptor]));
- */
-export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
-    const authService = inject(AuthService);
-
-    // Determine if request targets an absolute URL
-    const isAbsolute = /^https?:\/\//i.test(req.url);
-
-    let isOurApi = false;
-    if (isAbsolute) {
-        try {
-            const u = new URL(req.url);
-            // Match only requests to our API domain
-            isOurApi = /(^|\.)api\.videoflix-velizar-ganchev-backend\.com$/i.test(u.hostname);
-        } catch {
-            isOurApi = false;
-        }
-    } else {
-        // Relative requests are assumed to be internal API calls
-        isOurApi = true;
-    }
-
-    if (isOurApi) {
-        const token = authService.getUserToken();
-        if (token) {
-            const cloned = req.clone({
-                setHeaders: {
-                    Authorization: `Token ${token}`,
-                },
-            });
-            return next(cloned);
-        }
-    }
-    return next(req);
-}
 
 /**
  * Authentication guard for main content routes.
@@ -75,7 +25,7 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
 const authGuardMainContent: CanMatchFn = (route, segments) => {
     const router = inject(Router);
     const authService = inject(AuthService);
-    const isAuthenticated = authService.getUser();
+    const isAuthenticated = authService.isAuthenticated();
     if (isAuthenticated) {
         return true;
     }
@@ -95,7 +45,7 @@ const authGuardMainContent: CanMatchFn = (route, segments) => {
 const authGuard: CanMatchFn = (route, segments) => {
     const router = inject(Router);
     const authService = inject(AuthService);
-    const isAuthenticated = authService.getUser();
+    const isAuthenticated = authService.isAuthenticated();
     if (!isAuthenticated) {
         return true;
     }

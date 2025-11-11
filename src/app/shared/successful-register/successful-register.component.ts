@@ -1,42 +1,38 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 /**
  * Successful Register component.
  *
- * Displays a confirmation message after a user has successfully registered.
- * Shows the new user's email and formatted username for a personalized greeting.
- *
- * Selector: `app-successful-register`
- * Standalone: `true`
+ * Displays a confirmation message after successful registration.
+ * Shows the user's email and derives a username from it.
  */
 @Component({
   selector: 'app-successful-register',
   standalone: true,
   imports: [],
   templateUrl: './successful-register.component.html',
-  styleUrl: './successful-register.component.scss'
+  styleUrl: './successful-register.component.scss',
 })
 export class SuccessfulRegisterComponent {
-  /**
-   * Input signal containing the registered user's information.
-   * Includes both email and username.
-   *
-   * @example
-   * <app-successful-register [user]="{ email: 'john@example.com', username: 'john' }"></app-successful-register>
-   */
-  user = input<{ email: string; username: string }>({
-    email: '',
-    username: '',
-  });
 
   /**
-   * Returns the username formatted with an uppercase first letter.
-   *
-   * @example
-   * // If username = 'john'
-   * getFormattedUsername → 'John'
+   * Input signal: contains only the user's email.
    */
-  get getFormattedUsername() {
-    return this.user().username.charAt(0).toUpperCase() + this.user().username.slice(1);
-  }
+  email = input<string>('');
+
+  /**
+   * Derived username:
+   * Takes everything before @ and capitalizes the first letter.
+   *
+   * Example:
+   *   email = "velizar@example.com"
+   *   → Username = "Velizar"
+   */
+  username = computed(() => {
+    const value = this.email().trim();
+    if (!value.includes('@')) return '';
+    const raw = value.split('@')[0];
+    if (!raw) return '';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+  });
 }

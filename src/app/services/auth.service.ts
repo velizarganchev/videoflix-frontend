@@ -1,341 +1,189 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
-import { User } from '../models/user.class';
-import { ErrorService } from './error.service';
-import { catchError, tap, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Observable, OperatorFunction } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { User } from '../models/user.class';
+import { environment } from '../../../environments/environment';
 
-const BASE_URL = 'https://api.videoflix-velizar-ganchev-backend.com/users';
+type EmailExistsResponse = { exists: boolean };
 
-/**
- * Authentication service.
- *
- * Manages all authentication and user-related operations such as:
- * - Login / Signup / Logout
- * - Password reset flows
- * - Fetching and storing user profiles
- * - Managing user session persistence in `localStorage`
- * - Handling user favorites and email validation
- *
- * All API calls are handled through Angular's `HttpClient`
- * with error handling delegated to `ErrorService`.
- */
-@Injectable({
-  providedIn: 'root',
-})
+// Server responses (adjust if your backend returns additional data)
+type LoginResponse = User;
+type RegisterResponse = { email?: string } | { email?: [] };
+type VoidResponse = unknown;
+
+const SESSION_USER_KEY = 'vf_current_user';
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  /**
-   * Signal holding all registered user emails (used for async validation).
-   */
-  private userEmails = signal<string[]>([]);
-  allUserEmails = this.userEmails.asReadonly();
+  /** Base API root (no trailing slash) */
+  private readonly api = environment.baseApiUrl.replace(/\/$/, '');
+  private readonly users = `${this.api}/users`;
 
-  /**
-   * Signal holding the currently logged-in user.
-   */
-  private user = signal<User | null>(null);
-  currentUser = this.user.asReadonly();
+  private readonly http = inject(HttpClient);
+  private readonly router = inject(Router);
 
-  /**
-   * HTTP client for making API requests.
-   */
-  private http = inject(HttpClient);
+  /** Signal holding the current public user (no password/token stored). */
+  private readonly _currentUser = signal<User | null>(null);
 
-  /**
-   * Common HTTP headers used in all API requests.
-   */
-  private httpHeaders = new HttpHeaders({
-    'Content-Type': 'application/json',
-  });
+  /** Signal API for templates & components */
+  readonly currentUser = computed(() => this._currentUser());
 
-  /**
-   * Global error service for handling user-visible error messages.
-   */
-  private errorService = inject(ErrorService);
-
-  /**
-   * Angular Router used for navigation after login/logout.
-   */
-  private router = inject(Router);
-
-  /**
-   * Retrieves the current user from localStorage (if available).
-   *
-   * @returns The user object or `null` if not logged in.
-   */
-  getUser(): User | null {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  constructor() {
+    this.hydrateFromSession();
   }
 
   /**
-   * Returns the current user's authentication token.
-   *
-   * @returns JWT token string or an empty string if not logged in.
+   * Rehydrate the in-memory user from session storage.
+   * Stores only public, non-sensitive user fields.
    */
-  getUserToken(): string {
-    return this.getUser()?.token || '';
+  hydrateFromSession(): void {
+    try {
+      const raw = sessionStorage.getItem(SESSION_USER_KEY);
+      if (raw) {
+        const user = JSON.parse(raw) as User;
+        this._currentUser.set(user);
+      }
+    } catch {
+      sessionStorage.removeItem(SESSION_USER_KEY);
+    }
   }
 
-  /**
-   * Checks if a user session is currently active.
-   *
-   * @returns `true` if a user is logged in, otherwise `false`.
-   */
-  isLoggedIn(): boolean {
-    const user = this.getUser();
-    return !!(user && user.token);
-  }
-
-  /**
-   * Loads the user from localStorage into the reactive signal state.
-   */
-  loadUser() {
-    const user = this.getUser();
+  /** Persist the current user (or clear) in session storage. */
+  private persistUser(user: User | null): void {
     if (user) {
-      this.user.set(new User(user));
+      sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem(SESSION_USER_KEY);
     }
   }
 
   /**
-   * Persists user data to both signal state and localStorage.
-   *
-   * @param user - User object to store.
+   * Login with email/password and optional "remember" (extends refresh cookie).
+   * Stores only public user data in memory + sessionStorage. Tokens remain in cookies.
    */
-  setUser(user: User) {
-    this.user.set(user);
-    localStorage.setItem('user', JSON.stringify(user));
-  }
-
-  /**
-   * Updates the user's list of favorite videos both locally and in storage.
-   *
-   * @param favoriteVideos - Array of favorite video IDs.
-   */
-  updateUserFavoriteVideos(favoriteVideos: number[]) {
-    this.user.update((currenUser) => {
-      const updatedUser = new User({
-        ...currenUser,
-        favorite_videos: favoriteVideos,
-      });
-      this.setUser(updatedUser);
-      return updatedUser;
-    });
-  }
-
-  /**
-   * Loads all registered user emails from the backend.
-   * Used mainly for async email validation during signup and forgot-password flows.
-   *
-   * @returns Observable stream of users.
-   */
-  loadUserEmails() {
-    return this.fetchAllUser().pipe(
-      tap({
-        next: (users) => {
-          const emails = users.map((user: User) => user.email);
-          this.userEmails.set(emails);
-          this.loadUser();
-        },
+  login(email: string, password: string, remember = false): Observable<User> {
+    return this.http.post<LoginResponse>(
+      `${this.users}/login/`,
+      { email, password, remember },
+      { withCredentials: true }
+    ).pipe(
+      tap((user) => {
+        this._currentUser.set(user);
+        this.persistUser(user);
       })
     );
   }
 
   /**
-   * Fetches all user profiles from the backend.
-   *
-   * @returns Observable of user profile data.
+   * Refresh access cookie using the refresh cookie (no user data required).
    */
-  fetchAllUser() {
-    return this.http
-      .get<[]>(`${BASE_URL}/profiles/`, { headers: this.httpHeaders })
-      .pipe(
-        catchError((error) => {
-          this.errorService.showError('Failed to fetch user emails');
-          return throwError(() => new Error('Failed to fetch user emails'));
-        })
-      );
+  refresh(): Observable<void> {
+    return this.http.post<VoidResponse>(
+      `${this.users}/refresh/`,
+      {},
+      { withCredentials: true }
+    ) as Observable<void>;
   }
 
   /**
-   * Automatically logs in a user if valid data is found in localStorage.
-   *
-   * Searches for both "user" and "rememberMe" entries.
+   * Logout server-side (clears cookies) and reset local state.
    */
-  autoLogin() {
-    const user =
-      localStorage.getItem('user') || localStorage.getItem('rememberMe');
-    if (user) {
-      const loadedUser = new User(JSON.parse(user));
-      this.user.set(loadedUser);
-    }
-  }
-
-  // /**
-  //  * Automatically logs out the user after a given expiration duration.
-  //  * (Currently unused)
-  //  *
-  //  * @param expirationDuration - Duration in milliseconds until logout.
-  //  */
-  // autoLogout(expirationDuration: number) {
-  //   setTimeout(() => {
-  //     this.logout();
-  //   }, expirationDuration);
-  // }
-
-  /**
-   * Logs in a user with the provided credentials.
-   *
-   * @param email - User's email address.
-   * @param password - User's password.
-   * @returns Observable emitting a `User` object on success.
-   */
-  login(email: string, password: string) {
-    return this.fetchUser(email, password).pipe(
-      tap({
-        next: (user) => {
-          this.user.set(user);
-          localStorage.setItem('user', JSON.stringify(user));
-        },
-      })
+  logout(): Observable<void> {
+    return this.http.post<VoidResponse>(
+      `${this.users}/logout/`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      this.clearUserAndRedirect()
     );
   }
 
   /**
-   * Registers a new user.
-   *
-   * @param email - User email.
-   * @param password - User password.
-   * @param confirmPassword - Confirmation password.
-   * @returns Observable emitting a new `User` on success.
+   * Signup a new user; backend sends confirmation email.
    */
-  signup(email: string, password: string, confirmPassword: string) {
-    return this.createUser(email, password, confirmPassword);
+  signup(email: string, password: string, confirmPassword: string): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(
+      `${this.users}/register/`,
+      { email, password, confirm_password: confirmPassword },
+      { withCredentials: true }
+    );
   }
 
   /**
-   * Initiates a password reset email for the specified address.
-   *
-   * @param email - User email for password reset.
-   * @returns Observable of the backend response.
+   * Request password reset (email with link).
    */
-  forgotPassword(email: string) {
-    return this.forgotPasswordUser(email);
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<VoidResponse>(
+      `${this.users}/forgot-password/`,
+      { email },
+      { withCredentials: true }
+    ) as Observable<void>;
   }
 
   /**
-   * Completes the password reset process with provided credentials.
-   *
-   * @param uid - User ID from reset link.
-   * @param token - Reset token.
-   * @param newPassword - The new password to set.
-   * @returns Observable of the backend response.
+   * Submit new password using uid+token from the reset link.
    */
-  resetPassword(uid: string, token: string, newPassword: string) {
-    return this.resetPasswordUser(uid, token, newPassword);
+  resetPassword(uid: string, token: string, newPassword: string): Observable<void> {
+    return this.http.post<VoidResponse>(
+      `${this.users}/reset-password/`,
+      { uid, token, new_password: newPassword },
+      { withCredentials: true }
+    ) as Observable<void>;
   }
 
   /**
-   * Logs the user out, clears session data, and redirects to the login page.
+   * Check if an email is already registered.
+   * GET /users/email-exists/?email=foo@bar.com -> { exists: boolean }
    */
-  logout() {
-    this.user.set(null);
-    this.router.navigate(['/login'], { replaceUrl: true });
-    localStorage.removeItem('user');
+  checkEmailExists(email: string): Observable<EmailExistsResponse> {
+    const params = new HttpParams().set('email', email);
+    return this.http.get<EmailExistsResponse>(
+      `${this.users}/email-exists/`,
+      { params, withCredentials: true }
+    );
   }
 
   /**
-   * Fetches a user by credentials from the backend.
-   *
-   * @param email - User email.
-   * @param password - User password.
-   * @returns Observable emitting a `User` object.
+   * Clears the current user and redirects to login page.
    */
-  private fetchUser(email: string, password: string) {
-    return this.http
-      .post<User>(
-        `${BASE_URL}/login/`,
-        { email, password },
-        { headers: this.httpHeaders }
-      )
-      .pipe(
-        catchError((error) => {
-          this.errorService.showError('Invalid email or password!');
-          return throwError(() => new Error('Failed to fetch user'));
-        })
+  clearUserAndRedirect(): OperatorFunction<unknown, void> {
+    return (source) =>
+      source.pipe(
+        tap(() => {
+          this._currentUser.set(null);
+          this.persistUser(null);
+          this.router.navigate(['/login'], { replaceUrl: true });
+        }),
+        map(() => undefined)
       );
   }
 
-  /**
-   * Sends a signup request to create a new user account.
-   *
-   * @param email - New user's email.
-   * @param password - Password.
-   * @param confirm_password - Confirmation password.
-   * @returns Observable emitting the created `User`.
-   */
-  private createUser(
-    email: string,
-    password: string,
-    confirm_password: string
-  ) {
-    return this.http
-      .post<User>(
-        `${BASE_URL}/register/`,
-        { email, password, confirm_password },
-        { headers: this.httpHeaders }
-      )
-      .pipe(
-        catchError((error) => {
-          this.errorService.showError('Failed to create user');
-          return throwError(() => new Error('Failed to create user'));
-        })
-      );
+  // --- helper signals/methods ---
+
+  /** Returns `true` when a user is present (no tokens in browser storage). */
+  readonly isAuthenticated = computed(() => !!this._currentUser());
+
+  /** Clear client state without calling the API (used after failed refresh). */
+  clientLogout(): void {
+    this['_currentUser'].set(null);
+    this['persistUser'](null);
   }
 
-  /**
-   * Sends a password reset email to the backend.
-   *
-   * @param email - Email of the user requesting password reset.
-   * @returns Observable emitting API response.
-   */
-  private forgotPasswordUser(email: string) {
-    return this.http
-      .post(
-        `${BASE_URL}/forgot-password/`,
-        { email },
-        { headers: this.httpHeaders }
-      )
-      .pipe(
-        catchError((error) => {
-          this.errorService.showError('Failed to send password reset email');
-          return throwError(
-            () => new Error('Failed to send password reset email')
-          );
-        })
-      );
+  /** Patch the in-memory current user immutably and persist to sessionStorage. */
+  patchCurrentUser(patch: Partial<User>): void {
+    const u = this._currentUser();
+    if (!u) return;
+    const merged: User = { ...u, ...patch };
+    this._currentUser.set(merged);
+    this.persistUser(merged);
   }
 
-  /**
-   * Submits a password reset request to the backend.
-   *
-   * @param uid - User ID from reset link.
-   * @param token - Token validating the reset request.
-   * @param new_password - New password chosen by the user.
-   * @returns Observable emitting backend response.
-   */
-  private resetPasswordUser(uid: string, token: string, new_password: string) {
-    return this.http
-      .post(
-        `${BASE_URL}/reset-password/`,
-        { uid, token, new_password },
-        { headers: this.httpHeaders }
-      )
-      .pipe(
-        catchError((error) => {
-          this.errorService.showError('Failed to reset password');
-          return throwError(() => new Error('Failed to reset password'));
-        })
-      );
+  /** Convenience: replace the favorite_videos list on the current user. */
+  setFavoriteVideos(favorite_videos: number[]): void {
+    this.patchCurrentUser({ favorite_videos });
   }
 }
+
+

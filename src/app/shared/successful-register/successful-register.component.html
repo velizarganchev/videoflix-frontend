@@ -1,12 +1,14 @@
 <div class="success-full-container w-40">
     <div class="signup-form-feedback">
         <p>
-            Dear <strong>{{ getFormattedUsername }}</strong>, please check your email inbox
-            <strong>{{ user().email }}</strong>
+            Dear <strong>{{ username() }}</strong>, please check your email inbox
+            <strong>{{ email() }}</strong>
             and click on the activation link to confirm and complete your registration.
-            <br>Note: Check your spam folder if you can't find the email!
+            <br />
+            Note: Check your spam folder if you can't find the email!
         </p>
     </div>
+
     <div class="signup-form-feedback-icon-container">
         <i class="fa-solid fa-envelope-open-text"></i>
     </div>

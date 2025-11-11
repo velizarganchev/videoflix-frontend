@@ -56,7 +56,11 @@ export class NavigationComponent {
    * <button (click)="onLogout()">Logout</button>
    */
   onLogout() {
-    this.authService.logout();
+    this.authService.logout().subscribe({
+      error: (err) => {
+        console.error('Logout failed', err);
+      }
+    });
   }
 
   /**

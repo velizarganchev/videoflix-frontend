@@ -4,11 +4,7 @@
     <h1>Sign Up</h1>
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
       <div class="input-container">
-        <input
-          type="email"
-          placeholder="Email Address"
-          formControlName="email"
-        />
+        <input type="email" placeholder="Email Address" formControlName="email" />
       </div>
       @if (signupForm.controls.email.invalid) {
       <p>
@@ -18,11 +14,8 @@
       }
       <div class="passwords-cpntainer" formGroupName="passwords">
         <div class="input-container">
-          <input
-            [type]="showPassword() ? 'text' : 'password'"
-            formControlName="password"
-            placeholder="Enter a Password"
-          />
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+            placeholder="Enter a Password" />
           <button type="button" (click)="togglePasswordVisibility('password')">
             @if (!showPassword()){
             <i class="fa-solid fa-eye-slash"></i>
@@ -39,15 +32,9 @@
         </p>
         }
         <div class="input-container">
-          <input
-            formControlName="confirmPassword"
-            [type]="showConfirmPassword() ? 'text' : 'password'"
-            placeholder="Confirm Password"
-          />
-          <button
-            type="button"
-            (click)="togglePasswordVisibility('confirmPassword')"
-          >
+          <input formControlName="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'"
+            placeholder="Confirm Password" />
+          <button type="button" (click)="togglePasswordVisibility('confirmPassword')">
             @if (!showConfirmPassword()){
             <i class="fa-solid fa-eye-slash"></i>
             }@else {
@@ -72,6 +59,6 @@
     </form>
   </div>
   } @else if (successFullSignup()) {
-  <app-successful-register [user]="userData()" />
+  <app-successful-register [email]="userEmail().email" />
   }
 </section>

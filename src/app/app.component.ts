@@ -1,11 +1,10 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { ErrorService } from './services/error.service';
 import { ErrorToastComponent } from "./shared/error-toast/error-toast.component";
 import { NavigationComponent } from "./shared/navigation/navigation.component";
 import { FooterComponent } from "./shared/footer/footer.component";
-import { AuthService } from './services/auth.service';
 
 /**
  * Root application component.
@@ -35,12 +34,7 @@ import { AuthService } from './services/auth.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
-  /**
-   * Injected authentication service used for user and email initialization.
-   */
-  private authService = inject(AuthService);
-
+export class AppComponent {
   /**
    * DestroyRef used to clean up subscriptions when the component is destroyed.
    */
@@ -54,23 +48,5 @@ export class AppComponent implements OnInit {
   /**
    * Injected global error service providing access to app-wide error messages.
    */
-  public errorServise = inject(ErrorService);
-
-  /**
-   * Lifecycle hook that runs when the component is initialized.
-   *
-   * Loads all user emails to support async email validation and user data preloading.
-   * Ensures cleanup of the subscription on component destruction.
-   */
-  ngOnInit(): void {
-    const subscription = this.authService.loadUserEmails().subscribe({
-      error: (error) => {
-        console.error(error);
-      },
-    });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
-  }
+  public errorService = inject(ErrorService);
 }

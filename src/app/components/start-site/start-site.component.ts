@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { EmailExistsValidatorDirective } from "../../shared/validators/email-exists.directive";
 
 /**
  * Start Site component.
@@ -14,7 +15,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-start-site',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, EmailExistsValidatorDirective],
   templateUrl: './start-site.component.html',
   styleUrl: './start-site.component.scss'
 })

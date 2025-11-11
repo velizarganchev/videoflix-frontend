@@ -1,266 +1,138 @@
 import {
   Component,
   ElementRef,
-  inject,
+  HostListener,
   OnInit,
+  AfterViewInit,
   DestroyRef,
+  inject,
   signal,
   computed,
   viewChildren,
-  AfterViewChecked,
-  HostListener,
 } from '@angular/core';
-import { VideoItemComponent } from '../video-item/video-item.component';
-import { VideoService } from '../../services/video.service';
-import { Video } from '../../models/video.class';
-import { MainContentHeaderComponent } from "./main-content-header/main-content-header.component";
 import { CommonModule } from '@angular/common';
+import { VideoItemComponent } from '../video-item/video-item.component';
+import { MainContentHeaderComponent } from './main-content-header/main-content-header.component';
+import { VideoService } from '../../services/video.service';
 import { AuthService } from '../../services/auth.service';
+import { Video } from '../../models/video.class';
 
-/**
- * Main content component.
- *
- * Displays all video sections grouped by category and manages
- * favorite videos, scrolling behavior, and responsive UI updates.
- *
- * Responsibilities:
- * - Loads and groups videos by category.
- * - Displays favorites based on user profile.
- * - Controls horizontal scrolling and arrow visibility per section.
- * - Handles video playback state toggling.
- *
- * Selector: `app-main-content`
- * Standalone: `true`
- */
 @Component({
   selector: 'app-main-content',
   standalone: true,
   imports: [CommonModule, VideoItemComponent, MainContentHeaderComponent],
   templateUrl: './main-content.component.html',
-  styleUrl: './main-content.component.scss'
+  styleUrl: './main-content.component.scss',
 })
-export class MainContentComponent implements OnInit, AfterViewChecked {
-  /**
-   * References to scrollable containers for each video category.
-   * Used to control left/right scroll actions.
-   */
+export class MainContentComponent implements OnInit, AfterViewInit {
   scrollContainer = viewChildren<ElementRef>('scrollContainer');
-
-  /**
-   * References to scrollable container for favorite videos section.
-   */
   favoriteScrollContainer = viewChildren<ElementRef>('favoriteScrollContainer');
 
-  /**
-   * Signal indicating whether the video player overlay is visible.
-   */
-  showVideo = signal<boolean>(false);
-
-  /**
-   * Signal representing loading state during video fetching.
-   */
-  isFetching = signal<boolean>(false);
-
-  /**
-   * Holds the currently selected video for playback.
-   */
+  showVideo = signal(false);
+  isFetching = signal(false);
   videoToPlay = signal<Video | undefined>(undefined);
 
-  /**
-   * Injected service responsible for loading and managing videos.
-   */
-  videosService = inject(VideoService);
+  private readonly videosService = inject(VideoService);
+  private readonly auth = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  /**
-   * Injected authentication service used to retrieve current user data.
-   */
-  userService = inject(AuthService);
+  videos = this.videosService.loadedVideos;
+  user = this.auth.currentUser;
 
-  /**
-   * Angular DestroyRef for automatic subscription cleanup.
-   */
-  destroyRef = inject(DestroyRef);
+  groupedVideos = computed(() => {
+    const list = this.videos() ?? [];
+    return list.reduce<Record<string, Video[]>>((acc, v) => {
+      (acc[v.category] ||= []).push(v);
+      return acc;
+    }, {});
+  });
 
-  /**
-   * Computed list of loaded videos from the `VideoService`.
-   */
-  videos = computed(() => this.videosService.loadedVideos());
+  favoriteVideos = computed(() => {
+    const u = this.user();
+    const list = this.videos() ?? [];
+    const fav = u?.favorite_videos ?? [];
+    return list.filter(v => fav.includes(v.id));
+  });
 
-  /**
-   * Signal containing all videos grouped by their category.
-   * Key = category name, Value = array of videos.
-   */
-  groupedVideos = signal<{ [key: string]: Video[]; }>({});
 
-  /**
-   * Signal storing the current user's favorite videos.
-   */
-  favoriteVideos = signal<Video[]>([]);
+  visibleArrows = signal<Record<string, boolean>>({});
 
-  /**
-   * Signal tracking which category carousels should display scroll arrows.
-   * Key = category name, Value = boolean visibility flag.
-   */
-  visibleArrows = signal<{ [key: string]: boolean }>({});
-
-  /**
-   * Computed signal returning the authenticated user object.
-   */
-  user = computed(() => this.userService.getUser());
-
-  /**
-   * Lifecycle hook — initializes video data and sets up reactive states.
-   *
-   * - Fetches videos from `VideoService`.
-   * - Groups them by category once loaded.
-   * - Determines which categories require arrows.
-   * - Filters favorite videos for the current user.
-   * - Cleans up subscription on destroy.
-   */
   ngOnInit(): void {
     this.isFetching.set(true);
-    const subscription = this.videosService.loadVideos().subscribe({
-      error: (error) => {
-        console.error(error);
-      },
+    const sub = this.videosService.loadVideos().subscribe({
+      error: (e) => console.error(e),
       complete: () => {
         this.isFetching.set(false);
-        this.groupedVideos.set(this.groupByCategory(this.videos()!));
-        this.updateArrowVisibility();
-        this.favoriteVideos.set(this.videos()!.filter(video => this.user()?.favorite_videos?.includes(video.id)));
-      }
+        queueMicrotask(() => this.updateArrowVisibility());
+      },
     });
-
-    this.destroyRef.onDestroy(() => {
-      subscription.unsubscribe();
-    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
-  /**
-   * Lifecycle hook — executed after every view check.
-   * Ensures arrow visibility stays accurate when layout updates occur.
-   */
-  ngAfterViewChecked(): void {
+  ngAfterViewInit(): void {
+    queueMicrotask(() => this.updateArrowVisibility());
+  }
+
+  @HostListener('window:resize')
+  onResize() {
     this.updateArrowVisibility();
   }
-
-  /**
-   * Listens for window resize events and triggers re-evaluation of arrow visibility.
-   *
-   * @param event - Browser resize event
-   */
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
-    this.updateArrowVisibility();
-  }
-
-  /**
-   * Updates the list of favorite videos after a user action (like/unlike).
-   */
-  updateFavorite() {
-    this.user = computed(() => this.userService.getUser());
-    this.favoriteVideos.set(this.videos()!.filter(video => this.user()?.favorite_videos?.includes(video.id)));
-  }
-
-  /**
-   * Updates the visibility of scroll arrows for each video category carousel.
-   *
-   * - Checks scrollable width vs. visible width for each container.
-   * - Also includes logic for favorite videos section.
-   */
   updateArrowVisibility() {
-    const groupedVideos = this.groupedVideos();
-    const newVisibility: { [key: string]: boolean } = {};
+    const grouped = this.groupedVideos();
+    const next: Record<string, boolean> = {};
 
-    Object.keys(groupedVideos).forEach(category => {
-      const container = this.getCategoryScrollContainer(category);
-      if (container) {
-        newVisibility[category] = container.scrollWidth > container.clientWidth;
-      }
+    Object.keys(grouped).forEach((category) => {
+      const el = this.getCategoryScrollContainer(category);
+      if (el) next[category] = el.scrollWidth > el.clientWidth;
     });
 
-    // 🔹 Includes check for favorite videos section
-    if (this.favoriteScrollContainer()) {
-      const elements = this.favoriteScrollContainer();
-      const elementRef = elements!.find((el) => el.nativeElement.getAttribute('data-category') === 'favorite');
-
-      if (elementRef) {
-        newVisibility['favorite'] = elementRef.nativeElement.scrollWidth > elementRef.nativeElement.clientWidth;
-      }
+    const favRefs = this.favoriteScrollContainer();
+    if (favRefs?.length) {
+      const fav = favRefs.find(
+        (r) => r.nativeElement.getAttribute('data-category') === 'favorite'
+      );
+      if (fav) next['favorite'] = fav.nativeElement.scrollWidth > fav.nativeElement.clientWidth;
     }
 
-    this.visibleArrows.update(() => newVisibility);
+    this.visibleArrows.set(next);
   }
 
-  /**
-   * Returns the scroll container element corresponding to a given video category.
-   *
-   * @param category - The category name to locate.
-   * @returns The HTML element of the scroll container, or `null` if not found.
-   */
   getCategoryScrollContainer(category: string): HTMLElement | null {
-    const elements = this.scrollContainer();
-    const elementRef = elements.find((el) => el.nativeElement.getAttribute('data-category') === category);
-    return elementRef ? elementRef.nativeElement : null;
+    const refs = this.scrollContainer();
+    const ref = refs.find(
+      (r) => r.nativeElement.getAttribute('data-category') === category
+    );
+    return ref ? ref.nativeElement : null;
   }
 
-  /**
-   * Scrolls the video list to the left for the specified category.
-   *
-   * @param category - Either a category name ('favorite') or index number.
-   */
   scrollLeft(category: string | number) {
-    if (category === 'favorite' && this.favoriteScrollContainer) {
-      const favoriteContainer = this.favoriteScrollContainer().find(el => el.nativeElement.getAttribute('data-category') === 'favorite');
-      favoriteContainer?.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
-    } else {
-      const container = this.scrollContainer().find((el, index) => index === category);
-      container?.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+    if (category === 'favorite') {
+      const fav = this.favoriteScrollContainer()
+        .find(r => r.nativeElement.getAttribute('data-category') === 'favorite');
+      fav?.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
+      return;
     }
+    const ref = this.scrollContainer().find((_, i) => i === category);
+    ref?.nativeElement.scrollBy({ left: -200, behavior: 'smooth' });
   }
 
-  /**
-   * Scrolls the video list to the right for the specified category.
-   *
-   * @param category - Either a category name ('favorite') or index number.
-   */
   scrollRight(category: string | number) {
-    if (category === 'favorite' && this.favoriteScrollContainer) {
-      const favoriteContainer = this.favoriteScrollContainer().find(el => el.nativeElement.getAttribute('data-category') === 'favorite');
-      favoriteContainer?.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
-    } else {
-      const container = this.scrollContainer().find((el, index) => index === category);
-      container?.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+    if (category === 'favorite') {
+      const fav = this.favoriteScrollContainer()
+        .find(r => r.nativeElement.getAttribute('data-category') === 'favorite');
+      fav?.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
+      return;
     }
+    const ref = this.scrollContainer().find((_, i) => i === category);
+    ref?.nativeElement.scrollBy({ left: 200, behavior: 'smooth' });
   }
 
-  /**
-   * Handles a click event on a video item.
-   *
-   * Toggles the video player overlay and sets the selected video.
-   *
-   * @param showVideo - Current visibility state of the video player.
-   * @param video - The video object that was clicked.
-   */
-  handleVideoClick(showVideo: boolean, video: Video) {
+  handleVideoClick(video: Video) {
     this.videoToPlay.set(video);
-    this.showVideo.set(!this.showVideo());
+    this.showVideo.update(v => !v);
   }
 
-  /**
-   * Groups videos by their category for easier rendering and scrolling.
-   *
-   * @param videos - Array of `Video` objects to group.
-   * @returns An object where each key is a category and value is an array of videos in that category.
-   */
-  private groupByCategory(videos: Video[]) {
-    return videos.reduce((groups: { [key: string]: Video[] }, video: Video) => {
-      const category = video.category;
-      if (!groups[category]) {
-        groups[category] = [];
-      }
-      groups[category].push(video);
-      return groups;
-    }, {});
+  updateFavorite() {
+    queueMicrotask(() => this.updateArrowVisibility());
   }
 }

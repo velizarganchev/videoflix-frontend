@@ -4,14 +4,34 @@
             <h1>Movies, TV shows, and more</h1>
             <h4>Enter your email to create or restart your subscription.</h4>
         </div>
+
         <div class="start-site-form-container">
             <form>
-                <input type="text" placeholder="Email address" [(ngModel)]="email" required email #emailInput="ngModel"
-                    [ngModelOptions]="{standalone: true}" />
-                <button [disabled]="emailInput.invalid" [routerLink]="['/signup']" [queryParams]="{email: email()}" type="button">
-                    Sign Up
-                    <img src="../../../assets/icons/arrow_right.png" />
-                </button>
+                <!-- Row: input + button on one line -->
+                <div class="form-row">
+                    <input type="text" placeholder="Email address" [appEmailExists]="true" [ngModel]="email()"
+                        (ngModelChange)="email.set($event)" required email #emailInput="ngModel"
+                        [ngModelOptions]="{ standalone: true }" />
+
+                    <button type="button" [disabled]="emailInput.invalid" [routerLink]="['/signup']"
+                        [queryParams]="{ email: email() }">
+                        Sign Up
+                        <img src="../../../assets/icons/arrow_right.png" alt="arrow" />
+                    </button>
+                </div>
+
+                <!-- Message area: always reserves height; shows only when invalid -->
+                <div class="form-message" aria-live="polite">
+                    @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+                    @if (emailInput.errors?.['required']) {
+                    <span>Please enter your email address.</span>
+                    } @else if (emailInput.errors?.['email']) {
+                    <span>Please enter a valid email address.</span>
+                    } @else if (emailInput.errors?.['emailExists']) {
+                    <span>This email is already registered.</span>
+                    }
+                    }
+                </div>
             </form>
         </div>
     </div>
