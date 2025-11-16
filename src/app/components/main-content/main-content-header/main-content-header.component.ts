@@ -14,16 +14,10 @@ import { VideoService } from '../../../services/video.service';
 
 /**
  * MainContentHeaderComponent
- * --------------------------
- * Teaser (header) section for the main page:
- * - Loads a chosen teaser video and plays it in the background (looped).
- * - When "Play" is pressed, opens a full overlay player with progress tracking
- *   (same behavior as the rest of the site).
  *
- * Stability notes:
- * - We pause the teaser while the overlay is open.
- * - We open the overlay only after a valid source is resolved.
- * - We do NOT track teaser progress.
+ * Header/teaser section for the main page:
+ * - shows a looping teaser video in the background
+ * - opens a full overlay player when "Play" is pressed
  */
 @Component({
   selector: 'app-main-content-header',
@@ -33,7 +27,7 @@ import { VideoService } from '../../../services/video.service';
   styleUrl: './main-content-header.component.scss',
 })
 export class MainContentHeaderComponent implements OnInit, OnDestroy {
-  /** Services */
+  /** Data & helper services. */
   private readonly videosService = inject(VideoService);
   readonly videoProgressService = inject(VideoProgressService);
   readonly videoQualityService = inject(VideoQualityService);
@@ -43,30 +37,33 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
 
   /**
    * Selected teaser video.
-   * Change the predicate if you want a different selection strategy
-   * (e.g., by ID, by flag like isFeatured, etc.).
    */
   readonly previewVideo = computed(() =>
-    this.videos()?.find((v) => v.title === 'Neon Pulse: The Awakening')
-  );
+    this.videos()?.[0] ?? null);
 
   /** Overlay open/close state. */
   readonly playVideo = signal<boolean>(false);
 
-  /** Signed URL for the background teaser element (<video.bg-video>). */
+  /** Signed URL used for the background teaser <video>. */
   readonly headerVideoSrc = signal<string>('');
 
+  /**
+   * On init:
+   * - load videos
+   * - resolve teaser
+   * - request a signed URL via the progress service
+   * - set headerVideoSrc and clear teaser state afterwards
+   */
   ngOnInit(): void {
     this.videosService.loadVideos().subscribe({
       next: () => {
         const teaser = this.previewVideo();
         if (!teaser) return;
 
-        // Temporarily set the teaser in the progress service to request a signed URL
+        // Temporarily set the teaser to request a signed URL
         this.videoProgressService.video.set(teaser);
         this.videoProgressService.loadVideoProgress(teaser.id);
 
-        // Allow the service to resolve its defaultSource; then copy into header state
         setTimeout(() => {
           const src = this.videoProgressService.defaultSource();
           if (src) {
@@ -76,7 +73,7 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
             console.warn('[MainHeader] No teaser source available.');
           }
 
-          // Important: clear the service so teaser is not tracked as a "real" session
+          // Clear state so teaser is not tracked as a normal session
           this.videoProgressService.reset();
         }, 500);
       },
@@ -86,8 +83,8 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Try to start autoplay on the teaser <video>.
-   * If the browser blocks it, retry muted.
+   * Try to autoplay the teaser video element.
+   * If autoplay fails, retry muted.
    */
   private forceAutoplay(): void {
     setTimeout(() => {
@@ -97,16 +94,16 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
       videoEl.play().catch(() => {
         videoEl.muted = true;
         videoEl.play().catch(() => {
-          /* give up silently */
+          /* ignore autoplay failure */
         });
       });
     }, 800);
   }
 
   /**
-   * Click handler from the template:
-   * - If closed → open overlay (normal resume behavior like other videos).
-   * - If open → close overlay (and save progress).
+   * Toggle the overlay:
+   * - open if closed
+   * - close if open
    */
   handelPlay(): void {
     if (!this.playVideo()) {
@@ -117,25 +114,23 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Open the overlay player in a stable way:
-   * 1) Prepare progress/quality services and pause teaser.
-   * 2) Wait for a valid defaultSource() (bounded retry) before rendering the overlay
-   *    to avoid *ngIf flicker and "no video" issues.
+   * Open the overlay player:
+   * - set current video for progress tracking
+   * - show a short "optimizing" message
+   * - pause the background teaser
+   * - wait for a valid source (with a small upper bound) before showing overlay
    */
   private openOverlay(): void {
     const pv = this.previewVideo();
     if (!pv) return;
 
-    // Prepare player services (normal resume behavior)
     this.videoProgressService.video.set(pv);
     this.videoQualityService.sourceUpdateMessage.set('Optimizing video for your screen.');
     this.videoProgressService.loadVideoProgress(pv.id);
 
-    // Pause background teaser
     const teaser = document.querySelector<HTMLVideoElement>('.bg-video');
     if (teaser) teaser.pause();
 
-    // Wait for a source, but with a short upper bound (~2s) to avoid deadlocks.
     const waitForSrc = (attempts = 0) => {
       const src = this.videoProgressService.defaultSource();
       if (src) {
@@ -144,7 +139,7 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
         return;
       }
       if (attempts >= 20) {
-        // Fallback: open anyway; VjsPlayer might resolve late bindings.
+        // Fallback: open anyway; the player may still resolve the source
         this.playVideo.set(true);
         this.videoQualityService.clearMessage();
         return;
@@ -157,9 +152,9 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
 
   /**
    * Close the overlay:
-   * - Save progress exactly once here.
-   * - Resume teaser playback.
-   * - Clear player state for the next open cycle.
+   * - save progress
+   * - resume teaser playback
+   * - clear player state
    */
   private closeOverlay(): void {
     const pv = this.previewVideo();
@@ -169,7 +164,6 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
 
     this.playVideo.set(false);
 
-    // Resume background teaser
     const teaser = document.querySelector<HTMLVideoElement>('.bg-video');
     if (teaser) {
       teaser.play().catch(() => {
@@ -177,21 +171,19 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Clear current session state (keep any internal caches intact)
     this.videoProgressService.video.set(null);
     this.videoQualityService.clearMessage();
   }
 
   /**
-   * Bound to (currentTimeUpdated) from the player.
-   * Keeps progress service in sync during playback.
+   * Keep the progress service in sync while the overlay player is active.
    */
   updateCurrentTime(time: number): void {
     this.videoProgressService.updateCurrentTime(time);
   }
 
   /**
-   * Persist progress if the component unmounts while the overlay is open.
+   * Persist progress if the component is destroyed while a teaser video is active.
    */
   ngOnDestroy(): void {
     const pv = this.previewVideo();

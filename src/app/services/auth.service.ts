@@ -15,19 +15,30 @@ type VoidResponse = unknown;
 
 const SESSION_USER_KEY = 'vf_current_user';
 
+/**
+ * AuthService
+ *
+ * Handles authentication-related HTTP calls and minimal client-side state:
+ * - login / logout / refresh token
+ * - register, forgot password, reset password
+ * - keep a lightweight "current user" in memory + sessionStorage
+ *
+ * Tokens (access / refresh) are stored in HTTP-only cookies on the backend.
+ */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** Base API root (no trailing slash) */
+  /** Base API root (no trailing slash). */
   private readonly api = environment.baseApiUrl.replace(/\/$/, '');
+  /** Users endpoint base: <api>/users */
   private readonly users = `${this.api}/users`;
 
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  /** Signal holding the current public user (no password/token stored). */
+  /** Internal signal holding the current public user (no password/token stored). */
   private readonly _currentUser = signal<User | null>(null);
 
-  /** Signal API for templates & components */
+  /** Read-only signal API for templates & components. */
   readonly currentUser = computed(() => this._currentUser());
 
   constructor() {
@@ -50,7 +61,9 @@ export class AuthService {
     }
   }
 
-  /** Persist the current user (or clear) in session storage. */
+  /**
+   * Persist the current user (or clear) in session storage.
+   */
   private persistUser(user: User | null): void {
     if (user) {
       sessionStorage.setItem(SESSION_USER_KEY, JSON.stringify(user));
@@ -60,8 +73,10 @@ export class AuthService {
   }
 
   /**
-   * Login with email/password and optional "remember" (extends refresh cookie).
-   * Stores only public user data in memory + sessionStorage. Tokens remain in cookies.
+   * Login with email/password and optional "remember" flag.
+   *
+   * Stores only public user data in memory + sessionStorage.
+   * Tokens remain in secure cookies managed by the backend.
    */
   login(email: string, password: string, remember = false): Observable<User> {
     return this.http.post<LoginResponse>(
@@ -77,7 +92,8 @@ export class AuthService {
   }
 
   /**
-   * Refresh access cookie using the refresh cookie (no user data required).
+   * Refresh the access cookie using the refresh cookie.
+   * No user payload is required or returned.
    */
   refresh(): Observable<void> {
     return this.http.post<VoidResponse>(
@@ -89,6 +105,11 @@ export class AuthService {
 
   /**
    * Logout server-side (clears cookies) and reset local state.
+   *
+   * Uses clearUserAndRedirect() operator to:
+   * - clear the in-memory user
+   * - clear sessionStorage
+   * - navigate to /login
    */
   logout(): Observable<void> {
     return this.http.post<VoidResponse>(
@@ -101,7 +122,8 @@ export class AuthService {
   }
 
   /**
-   * Signup a new user; backend sends confirmation email.
+   * Signup a new user.
+   * The backend is responsible for sending any confirmation email.
    */
   signup(email: string, password: string, confirmPassword: string): Observable<RegisterResponse> {
     return this.http.post<RegisterResponse>(
@@ -112,7 +134,7 @@ export class AuthService {
   }
 
   /**
-   * Request password reset (email with link).
+   * Request password reset (email with reset link).
    */
   forgotPassword(email: string): Observable<void> {
     return this.http.post<VoidResponse>(
@@ -123,7 +145,7 @@ export class AuthService {
   }
 
   /**
-   * Submit new password using uid+token from the reset link.
+   * Submit new password using uid + token from the reset link.
    */
   resetPassword(uid: string, token: string, newPassword: string): Observable<void> {
     return this.http.post<VoidResponse>(
@@ -135,6 +157,7 @@ export class AuthService {
 
   /**
    * Check if an email is already registered.
+   *
    * GET /users/email-exists/?email=foo@bar.com -> { exists: boolean }
    */
   checkEmailExists(email: string): Observable<EmailExistsResponse> {
@@ -146,7 +169,10 @@ export class AuthService {
   }
 
   /**
-   * Clears the current user and redirects to login page.
+   * RxJS operator: clears the current user and redirects to the login page.
+   *
+   * Intended for use in the logout() pipeline:
+   * this.http.post(...).pipe(this.clearUserAndRedirect())
    */
   clearUserAndRedirect(): OperatorFunction<unknown, void> {
     return (source) =>
@@ -162,16 +188,26 @@ export class AuthService {
 
   // --- helper signals/methods ---
 
-  /** Returns `true` when a user is present (no tokens in browser storage). */
+  /**
+   * Returns `true` when a user is present in memory.
+   * Note: tokens are never stored in browser storage.
+   */
   readonly isAuthenticated = computed(() => !!this._currentUser());
 
-  /** Clear client state without calling the API (used after failed refresh). */
+  /**
+   * Clear client-side auth state without calling the API.
+   *
+   * Used from the HTTP interceptor when refresh fails
+   * (e.g. both access and refresh tokens are invalid).
+   */
   clientLogout(): void {
-    this['_currentUser'].set(null);
-    this['persistUser'](null);
+    this._currentUser.set(null);
+    this.persistUser(null);
   }
 
-  /** Patch the in-memory current user immutably and persist to sessionStorage. */
+  /**
+   * Patch the in-memory current user immutably and persist to sessionStorage.
+   */
   patchCurrentUser(patch: Partial<User>): void {
     const u = this._currentUser();
     if (!u) return;
@@ -180,10 +216,10 @@ export class AuthService {
     this.persistUser(merged);
   }
 
-  /** Convenience: replace the favorite_videos list on the current user. */
+  /**
+   * Convenience helper: replace the favorite_videos list on the current user.
+   */
   setFavoriteVideos(favorite_videos: number[]): void {
     this.patchCurrentUser({ favorite_videos });
   }
 }
-
-

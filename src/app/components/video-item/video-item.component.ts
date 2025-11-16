@@ -1,4 +1,3 @@
-// src/app/components/video-item/video-item.component.ts
 import { AfterViewInit, Component, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Video } from '../../models/video.class';
