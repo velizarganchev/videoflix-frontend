@@ -2,9 +2,9 @@
   @if (!successFullSignup()) {
   <div class="signup-form-container">
     <h1>Sign Up</h1>
-    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" autocomplete="off">
       <div class="input-container">
-        <input type="email" placeholder="Email Address" formControlName="email" />
+        <input type="email" placeholder="Email Address" formControlName="email" autocomplete="off" />
       </div>
       @if (signupForm.controls.email.invalid) {
       <p>
@@ -14,8 +14,8 @@
       }
       <div class="passwords-cpntainer" formGroupName="passwords">
         <div class="input-container">
-          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password"
-            placeholder="Enter a Password" />
+          <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Enter a Password"
+            autocomplete="new-password" />
           <button type="button" (click)="togglePasswordVisibility('password')">
             @if (!showPassword()){
             <i class="fa-solid fa-eye-slash"></i>
@@ -33,7 +33,7 @@
         }
         <div class="input-container">
           <input formControlName="confirmPassword" [type]="showConfirmPassword() ? 'text' : 'password'"
-            placeholder="Confirm Password" />
+            placeholder="Confirm Password" autocomplete="new-password" />
           <button type="button" (click)="togglePasswordVisibility('confirmPassword')">
             @if (!showConfirmPassword()){
             <i class="fa-solid fa-eye-slash"></i>
