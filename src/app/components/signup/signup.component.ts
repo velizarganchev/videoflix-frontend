@@ -18,38 +18,15 @@ import { map, of } from 'rxjs';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { SuccessfulRegisterComponent } from '../../shared/successful-register/successful-register.component';
 
-/**
- * Cross-field validator to ensure two controls have equal values.
- *
- * @param controlOne - Name of the first control.
- * @param controlTwo - Name of the second control.
- * @returns A validator function returning { valuesNotEqual: true } if mismatch.
- */
+/** Ensures two fields match */
 function equalValuesValidator(controlOne: string, controlTwo: string) {
   return (control: AbstractControl) => {
-    const valueOne = control.get(controlOne)?.value;
-    const valueTwo = control.get(controlTwo)?.value;
-
-    if (valueOne !== valueTwo) {
-      return { valuesNotEqual: true };
-    } else {
-      return null;
-    }
+    const v1 = control.get(controlOne)?.value;
+    const v2 = control.get(controlTwo)?.value;
+    return v1 === v2 ? null : { valuesNotEqual: true };
   };
 }
 
-/**
- * SignupComponent
- *
- * Handles new user registration:
- * - Reactive signup form with async email validation and password matching
- * - Loading state and success feedback
- * - Password visibility toggling
- * - Optional prefill of email via @Input
- *
- * Selector: app-signup
- * Standalone: true
- */
 @Component({
   selector: 'app-signup',
   standalone: true,
@@ -62,109 +39,77 @@ function equalValuesValidator(controlOne: string, controlTwo: string) {
   styleUrl: './signup.component.scss',
 })
 export class SignupComponent implements OnInit {
-  /** Auth API wrapper. */
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  /** Used to clean up subscriptions when the component is destroyed. */
-  destroyRef = inject(DestroyRef);
-
-  /**
-   * Optional email passed from parent.
-   * When present, pre-fills the email field on init.
-   */
   email = input<string>('');
 
-  /** Global loading flag for signup submission. */
-  isSingupLoading = signal<boolean>(false);
+  isSingupLoading = signal(false);
+  successFullSignup = signal(false);
 
-  /** Indicates that signup finished successfully. */
-  successFullSignup = signal<boolean>(false);
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
 
-  /** Toggles visibility of the password field. */
-  showPassword = signal<boolean>(false);
-
-  /** Toggles visibility of the confirmPassword field. */
-  showConfirmPassword = signal<boolean>(false);
-
-  /** Stores the registered email for success message display. */
   userEmail = signal<{ email: string }>({ email: '' });
 
-  /**
-   * Signup form:
-   * - email: required + email format + async "emailDoesNotExist" validator
-   * - passwords: nested group with password/confirmPassword and match validator
-   */
+  /** Signup form */
   signupForm = new FormGroup({
     email: new FormControl('', {
       validators: [Validators.required, Validators.email],
       asyncValidators: [this.emailDoesNotExistValidator()],
+      updateOn: 'blur',   // important optimization!
     }),
     passwords: new FormGroup(
       {
-        password: new FormControl('', {
-          validators: [Validators.required, Validators.minLength(6)],
-        }),
-        confirmPassword: new FormControl('', {
-          validators: [Validators.required],
-        }),
+        password: new FormControl('', [
+          Validators.required,
+          Validators.minLength(6),
+        ]),
+        confirmPassword: new FormControl('', Validators.required),
       },
       { validators: [equalValuesValidator('password', 'confirmPassword')] }
     ),
   });
 
-  /**
-   * Async validator to ensure the email is not already registered.
-   */
+  /** Async validator: checks if the email already exists */
   private emailDoesNotExistValidator() {
     return (control: AbstractControl) => {
-      const email = String(control.value ?? '').trim();
-      if (!email) return of(null);
-
-      return this.authService.checkEmailExists(email).pipe(
+      const value = String(control.value ?? '').trim();
+      if (!value) return of(null);
+      return this.authService.checkEmailExists(value).pipe(
         map(({ exists }) => (exists ? { emailExists: true } : null))
       );
     };
   }
 
-  /**
-   * On init:
-   * - prefill email field if @Input email is provided.
-   */
   ngOnInit(): void {
     if (this.email()) {
       this.signupForm.get('email')?.setValue(this.email());
     }
   }
 
-  /**
-   * Toggle visibility state for the password or confirmPassword field.
-   *
-   * @param field - 'password' | 'confirmPassword'
-   */
-  togglePasswordVisibility(field: string) {
+  togglePasswordVisibility(field: 'password' | 'confirmPassword') {
     if (field === 'password') {
-      this.showPassword.set(!this.showPassword());
-    } else if (field === 'confirmPassword') {
-      this.showConfirmPassword.set(!this.showConfirmPassword());
+      this.showPassword.update((v) => !v);
+    } else {
+      this.showConfirmPassword.update((v) => !v);
     }
   }
 
-  /**
-   * Form submit handler:
-   * - Checks validity
-   * - Calls AuthService.signup()
-   * - Shows loading state and success feedback
-   * - Resets form on error
-   */
+  /** Submit signup data to the backend */
   onSubmit() {
-    if (this.signupForm.valid) {
-      this.isSingupLoading.set(true);
+    if (!this.signupForm.valid) return;
 
-      const email = this.signupForm.get('email')?.value!;
-      const password = this.signupForm.get('passwords.password')?.value!;
-      const confirmPassword = this.signupForm.get('passwords.confirmPassword')?.value!;
+    this.isSingupLoading.set(true);
 
-      const sub = this.authService.signup(email, password, confirmPassword).subscribe({
+    const email = this.signupForm.get('email')?.value!;
+    const password = this.signupForm.get('passwords.password')?.value!;
+    const confirmPassword =
+      this.signupForm.get('passwords.confirmPassword')?.value!;
+
+    const sub = this.authService
+      .signup(email, password, confirmPassword)
+      .subscribe({
         next: () => {
           this.userEmail.set({ email });
         },
@@ -179,7 +124,6 @@ export class SignupComponent implements OnInit {
         },
       });
 
-      this.destroyRef.onDestroy(() => sub.unsubscribe());
-    }
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 }

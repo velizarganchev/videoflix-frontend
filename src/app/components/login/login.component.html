@@ -1,40 +1,56 @@
 <section class="login-container">
-    <div class="login-form-container">
+    <div class="login-form-container" [class.shake]="formError()">
         <h1>Log in</h1>
-        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
+            <!-- Email field -->
             <div class="input-container">
-                <input type="email" name="email" ngModel required email #email="ngModel" placeholder="Email Address">
+                <input id="email-input" type="email" name="email" ngModel required email #email="ngModel"
+                    placeholder="Email Address" autocomplete="off" autocorrect="off" autocapitalize="none"
+                    spellcheck="false" aria-label="Email Address" />
             </div>
+
+            <!-- Password field -->
             <div class="input-container">
                 <input [type]="showPassword() ? 'text' : 'password'" name="password" ngModel required minlength="6"
-                    #password="ngModel" placeholder="Enter a Password">
-                <button type="button" (click)="togglePasswordVisibility('password')">
-                    @if (!showPassword()){
+                    #password="ngModel" placeholder="Enter a Password" autocomplete="new-password" autocorrect="off"
+                    autocapitalize="none" spellcheck="false" aria-label="Password" />
+
+                <button type="button" (click)="togglePasswordVisibility()">
+                    @if (!showPassword()) {
                     <i class="fa-solid fa-eye-slash"></i>
-                    }@else {
+                    } @else {
                     <i class="fa-regular fa-eye"></i>
                     }
                 </button>
             </div>
-            @if (loginForm.form.invalid && email.touched &&
-            password.touched) {
+
+            <!-- Error message (новият @if engine) -->
+            @if (loginForm.form.invalid && (email.touched || password.touched)) {
             <p>
                 <i class="fa-solid fa-triangle-exclamation"></i>
-                Email or Password is invalid.
+                Email or password is invalid.
             </p>
-            }@else {
+            } @else {
             <p></p>
             }
 
+            <!-- Remember Me -->
             <div class="remember-me-container">
-                <input type="checkbox" id="remember-me" [(ngModel)]="rememberMe" name="rememberMe">
+                <input type="checkbox" id="remember-me" [(ngModel)]="rememberMe" name="rememberMe" />
                 <label for="remember-me">Remember me</label>
             </div>
+
+            <!-- Submit -->
             <button type="submit" [disabled]="loginForm.form.invalid">
-                @if (isloading()) {
+                @if (isLoading()) {
                 <app-loading-spinner />
-                }@else { Log in }
+                } @else {
+                Log in
+                }
             </button>
+
+            <!-- Links -->
             <div class="login-links-container">
                 <div class="link-container">
                     <a routerLink="/forgot-password">Forgot Password?</a>

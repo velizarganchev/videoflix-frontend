@@ -2,11 +2,9 @@
 
 .login-container {
   height: calc(100vh - 4.6rem);
-  background-image: linear-gradient(
-      #141414 0%,
+  background-image: linear-gradient(#141414 0%,
       rgba(20, 20, 20, 0.6) 60%,
-      rgba(20, 20, 20, 1) 100%
-    ),
+      rgba(20, 20, 20, 1) 100%),
     url("/assets/images/shared-bg-image.jpg");
   background-size: cover;
   background-position: center;
@@ -54,10 +52,18 @@
           color: $purple;
           font-size: 1.2rem;
           border: none;
+          background: transparent;
+
+          outline: none !important;
+          box-shadow: none !important;
+
+          -webkit-appearance: none;
+          appearance: none;
 
           &:focus,
           &:active {
-            outline: none;
+            outline: none !important;
+            box-shadow: none !important;
             border-color: $purple;
           }
 
@@ -72,7 +78,7 @@
           }
         }
 
-        > button {
+        >button {
           background-color: transparent;
           border: none;
           color: $purple;
@@ -120,18 +126,16 @@
             content: "";
             width: 0.8rem;
             height: 0.8rem;
-            clip-path: polygon(
-              50% 0%,
-              61% 35%,
-              98% 35%,
-              68% 57%,
-              79% 91%,
-              50% 70%,
-              21% 91%,
-              32% 57%,
-              2% 35%,
-              39% 35%
-            );
+            clip-path: polygon(50% 0%,
+                61% 35%,
+                98% 35%,
+                68% 57%,
+                79% 91%,
+                50% 70%,
+                21% 91%,
+                32% 57%,
+                2% 35%,
+                39% 35%);
             transform: scale(0);
             background-color: $purple;
           }
@@ -146,7 +150,7 @@
         }
       }
 
-      > button {
+      >button {
         color: white;
         background-color: $purple;
         padding: 0.75rem 1.5rem;
@@ -203,17 +207,21 @@
     gap: 1.8rem;
     padding: 2.4rem 3rem;
   }
+
   .login-container .login-form-container h1 {
     font-size: 2.6rem;
   }
+
   .login-container .login-form-container form .input-container {
     padding: 0.7rem 1.4rem;
   }
+
   .login-container .login-form-container form .input-container input {
     font-size: 1.15rem;
     height: 1.9rem;
   }
-  .login-container .login-form-container form > button {
+
+  .login-container .login-form-container form>button {
     font-size: 1.15rem;
   }
 }
@@ -223,17 +231,21 @@
     gap: 1.6rem;
     padding: 2.2rem 2.6rem;
   }
+
   .login-container .login-form-container h1 {
     font-size: 2.3rem;
   }
+
   .login-container .login-form-container form .input-container {
     padding: 0.65rem 1.25rem;
   }
+
   .login-container .login-form-container form .input-container input {
     font-size: 1.05rem;
     height: 1.85rem;
   }
-  .login-container .login-form-container form > button {
+
+  .login-container .login-form-container form>button {
     font-size: 1.05rem;
     padding: 0.7rem 1.25rem;
   }
@@ -246,25 +258,31 @@
     gap: 1.6rem;
     border-radius: 32px;
   }
+
   .login-container .login-form-container h1 {
     font-size: 2rem;
   }
+
   .login-container .login-form-container form {
     gap: 0.9rem;
   }
+
   .login-container .login-form-container form .input-container {
     padding: 0.7rem 1.4rem;
     border-radius: 12px;
   }
+
   .login-container .login-form-container form .input-container input {
     font-size: 1rem;
     height: 1.8rem;
   }
-  .login-container .login-form-container form > button {
+
+  .login-container .login-form-container form>button {
     font-size: 1rem;
     padding: 0.65rem 1.1rem;
     border-radius: 10px;
   }
+
   .login-container .login-form-container form p {
     margin-left: -2rem;
   }
@@ -274,20 +292,25 @@
   .login-container .login-form-container {
     padding: 1.8rem 1.6rem;
   }
+
   .login-container .login-form-container h1 {
     font-size: 1.75rem;
   }
+
   .login-container .login-form-container form .input-container {
     padding: 0.65rem 1.2rem;
   }
+
   .login-container .login-form-container form .input-container input {
     font-size: 0.95rem;
     height: 1.65rem;
   }
-  .login-container .login-form-container form > button {
+
+  .login-container .login-form-container form>button {
     font-size: 0.95rem;
     padding: 0.6rem 1rem;
   }
+
   .login-container .login-form-container form p {
     margin-left: -1rem;
   }
@@ -298,27 +321,69 @@
     padding: 1.6rem 1.3rem;
     gap: 1.1rem;
   }
+
   .login-container .login-form-container h1 {
     font-size: 1.55rem;
   }
+
   .login-container .login-form-container form .input-container {
     padding: 0.3rem 0.6rem;
   }
+
   .login-container .login-form-container form .input-container input {
     font-size: 0.9rem;
     height: 1.6rem;
   }
-  .login-container .login-form-container form > button {
+
+  .login-container .login-form-container form>button {
     font-size: 0.9rem;
     padding: 0.55rem 0.9rem;
   }
+
   .login-container .login-form-container form p {
     font-size: 0.7rem;
     margin-left: 0;
   }
+
   .login-container .login-form-container form .remember-me-container {
-    margin-left: -2rem; /* ✅ fixed alignment for smallest screens */
+    margin-left: -2rem;
+    /* ✅ fixed alignment for smallest screens */
   }
 }
+
 /* ─────────────────────────────────────────────────────────────
    End of responsive breakpoints */
+
+
+/* Shake animation for invalid submit */
+.shake {
+  animation: shakeAnim 0.35s ease-in-out;
+}
+
+@keyframes shakeAnim {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-6px);
+  }
+
+  50% {
+    transform: translateX(6px);
+  }
+
+  75% {
+    transform: translateX(-4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Autofocus highlight (subtle, not intrusive) */
+input:focus {
+  box-shadow: 0 0 4px rgba(104, 61, 255, 0.4);
+  transition: box-shadow 0.2s;
+}
