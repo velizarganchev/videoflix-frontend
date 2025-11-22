@@ -9,12 +9,13 @@ $transition-duration: 0.3s;
 
 :host {
   width: 100%;
-  max-width: 1920px;
+  max-width: 1600px;
   height: $nav-height-desktop;
   display: flex;
   position: fixed;
   z-index: 1000;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   top: 0;
 
   nav {
@@ -25,8 +26,10 @@ $transition-duration: 0.3s;
     padding: 0 $nav-padding-desktop;
     background-color: transparent;
     color: white;
-    transition: background-color $transition-duration ease,
-      padding $transition-duration ease, height $transition-duration ease;
+    transition:
+      background-color $transition-duration ease,
+      padding $transition-duration ease,
+      height $transition-duration ease;
 
     .logo {
       display: flex;
@@ -49,8 +52,10 @@ $transition-duration: 0.3s;
       font-weight: 700;
       color: white;
       background-color: $purple;
-      transition: background-color $transition-duration ease,
-        border $transition-duration ease, padding $transition-duration ease,
+      transition:
+        background-color $transition-duration ease,
+        border $transition-duration ease,
+        padding $transition-duration ease,
         font-size $transition-duration ease;
 
       &:hover {
@@ -61,8 +66,23 @@ $transition-duration: 0.3s;
   }
 }
 
+/* ───── Сянка при scroll – full width ───── */
 .navigation--scrolled {
-  backdrop-filter: contrast(0.8);
+  position: relative;
+
+  /* не ползваме вече backdrop-filter, само полупрозрачен фон */
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: $nav-height-desktop;
+    background: rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    z-index: -1; // стои зад самата навигация
+  }
 }
 
 /* ============= RESPONSIVE BREAKPOINTS ============= */
@@ -117,6 +137,10 @@ $transition-duration: 0.3s;
       }
     }
   }
+
+  .navigation--scrolled::before {
+    height: $nav-height-mobile;
+  }
 }
 
 /* <= 480px : small phones */
@@ -148,6 +172,11 @@ $transition-duration: 0.3s;
       }
     }
   }
+
+  .navigation--scrolled::before {
+    height: $nav-height-mobile;
+  }
 }
+
 /* ─────────────────────────────────────────────────────────────
    End of responsive breakpoints */

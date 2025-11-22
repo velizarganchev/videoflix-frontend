@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, OperatorFunction } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { Observable, of, OperatorFunction, throwError } from 'rxjs';
+import { tap, map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../models/user.class';
 import { environment } from '../../../environments/environment.prod';
@@ -117,7 +117,15 @@ export class AuthService {
       {},
       { withCredentials: true }
     ).pipe(
-      this.clearUserAndRedirect()
+      this.clearUserAndRedirect(),
+      catchError(err => {
+        if (err.status === 401) {
+          this.clientLogout();
+          this.router.navigate(['/login'], { replaceUrl: true });
+          return of(void 0);
+        }
+        return throwError(() => err);
+      })
     );
   }
 

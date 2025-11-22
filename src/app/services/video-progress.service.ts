@@ -82,18 +82,10 @@ export class VideoProgressService {
           next: ({ url }) => {
             this.defaultSource.set(url);
             this.videoQualityService.clearMessage();
-            // eslint-disable-next-line no-console
-            console.log('[VideoProgress] ✅ Signed video URL resolved:', url);
           },
           error: (err) => {
-            // eslint-disable-next-line no-console
-            console.error('[VideoProgress] ❌ Failed to fetch signed URL:', err);
             this.defaultSource.set('');
-            this.lastReqKey = ''; // allow retry
-          },
-          complete: () => {
-            // eslint-disable-next-line no-console
-            console.log('[VideoProgress] ℹ️ URL fetch complete');
+            this.lastReqKey = '';
           },
         });
     }, { allowSignalWrites: true });

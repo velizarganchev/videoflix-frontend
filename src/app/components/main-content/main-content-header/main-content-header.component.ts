@@ -38,8 +38,11 @@ export class MainContentHeaderComponent implements OnInit, OnDestroy {
   /**
    * Selected teaser video.
    */
-  readonly previewVideo = computed(() =>
-    this.videos()?.[0] ?? null);
+  readonly previewVideo = computed(() => {
+    const list = this.videos() ?? [];
+    if (list.length === 0) return null;
+    return list[list.length - 1];
+  });
 
   /** Overlay open/close state. */
   readonly playVideo = signal<boolean>(false);

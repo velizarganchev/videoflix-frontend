@@ -41,9 +41,21 @@ body {
   margin: 0;
   padding: 0;
   font-family: "DM Sans", sans-serif;
-  max-width: 1920px;
-  background-color: gray;
+  background-color: #000;
+  min-height: 100vh;
   @include scrollbar();
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+app-root {
+  width: 100%;
+  max-width: 1920px;
+  background-color: #000;
+  margin: 0 auto;
 }
 
 .w-40 {

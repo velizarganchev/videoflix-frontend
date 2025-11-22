@@ -64,6 +64,7 @@
         .arrowLeft {
           left: 20px;
         }
+
         .arrowRight {
           right: 20px;
         }
@@ -81,9 +82,20 @@
           }
 
           .video-content-item {
+            /* старият layout + новите неща за спинера */
             flex: 0 0 auto;
             width: 13.2rem;
             min-height: 9.24rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &.is-disabled {
+              cursor: default;
+              pointer-events: none;
+              opacity: 0.7;
+            }
 
             img {
               width: 100%;
@@ -91,6 +103,42 @@
               min-width: 200px;
               border-radius: 8px;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+              display: block;
+              object-fit: cover;
+            }
+
+            .video-loading,
+            .video-error-thumb {
+              width: 100%;
+              height: 100%;
+              min-height: 120px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              gap: 0.4rem;
+              text-align: center;
+              font-size: 0.8rem;
+            }
+
+            .video-loading {
+              .spinner {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border: 4px solid rgba(255, 255, 255, 0.25);
+                border-top-color: #6c63ff;
+                animation: main-content-spinner 0.7s linear infinite;
+              }
+            }
+
+            .video-error-thumb {
+              background: rgba(255, 75, 75, 0.15);
+              color: #ff4b4b;
+
+              i {
+                font-size: 1.2rem;
+              }
             }
 
             &:hover {
@@ -110,17 +158,16 @@
 
 /* ≤1280px: subtle downscale */
 @media (max-width: 1280px) {
-  .main-content-container
-    .main-video-content
-    .video-content-category-container
-    h1 {
+  .main-content-container .main-video-content .video-content-category-container h1 {
     font-size: 1.9rem;
   }
+
   .main-content-container .video-content-category .arrowLeft button,
   .main-content-container .video-content-category .arrowRight button {
     width: 48px;
     height: 48px;
   }
+
   .main-content-container .video-content-category .arrowLeft button i,
   .main-content-container .video-content-category .arrowRight button i {
     font-size: 1.9rem !important;
@@ -129,22 +176,20 @@
 
 /* ≤1024px: laptop/tablet landscape */
 @media (max-width: 1024px) {
-  .main-content-container
-    .main-video-content
-    .video-content-category-container
-    h1 {
+  .main-content-container .main-video-content .video-content-category-container h1 {
     font-size: 1.7rem;
   }
-  .main-content-container
-    .video-content-category
-    .video-content-category-scroll {
+
+  .main-content-container .video-content-category .video-content-category-scroll {
     padding: 0 54px;
   }
+
   .main-content-container .video-content-category .arrowLeft button,
   .main-content-container .video-content-category .arrowRight button {
     width: 46px;
     height: 46px;
   }
+
   .main-content-container .video-content-category .arrowLeft button i,
   .main-content-container .video-content-category .arrowRight button i {
     font-size: 1.8rem !important;
@@ -153,56 +198,54 @@
 
 /* ≤768px: tablet portrait / large phones */
 @media (max-width: 768px) {
-  .main-content-container
-    .main-video-content
-    .video-content-category-container
-    h1 {
+  .main-content-container .main-video-content .video-content-category-container h1 {
     font-size: 1.5rem;
   }
-  .main-content-container
-    .video-content-category
-    .video-content-category-scroll {
+
+  .main-content-container .video-content-category .video-content-category-scroll {
     padding: 0 50px;
     gap: 0.9rem;
   }
+
   .main-content-container .video-content-category .arrowLeft button,
   .main-content-container .video-content-category .arrowRight button {
     width: 42px;
     height: 42px;
   }
+
   .main-content-container .video-content-category .arrowLeft button i,
   .main-content-container .video-content-category .arrowRight button i {
     font-size: 1.6rem !important;
   }
 }
 
-/* ≤480px: small phones (also covers your “~477px” requirement) */
+/* ≤480px: small phones */
 @media (max-width: 480px) {
-  .main-content-container
-    .main-video-content
-    .video-content-category-container
-    h1 {
+  .main-content-container .main-video-content .video-content-category-container h1 {
     font-size: 1.25rem;
     margin-left: 4%;
     margin-bottom: 1.1rem;
   }
-  .main-content-container
-    .video-content-category
-    .video-content-category-scroll {
+
+  .main-content-container .video-content-category .video-content-category-scroll {
     padding: 0 44px;
     gap: 0.8rem;
   }
+
   .main-content-container .video-content-category .arrowLeft {
     left: 12px;
   }
+
   .main-content-container .video-content-category .arrowRight {
     right: 12px;
   }
+
   .main-content-container .video-content-category .arrowLeft button,
   .main-content-container .video-content-category .arrowRight button {
     width: 38px;
     height: 38px;
   }
+
   .main-content-container .video-content-category .arrowLeft button i,
   .main-content-container .video-content-category .arrowRight button i {
     font-size: 1.3rem !important;
@@ -211,33 +254,42 @@
 
 /* ≤360px: very small phones */
 @media (max-width: 360px) {
-  .main-content-container
-    .main-video-content
-    .video-content-category-container
-    h1 {
+  .main-content-container .main-video-content .video-content-category-container h1 {
     font-size: 1.1rem;
     margin-left: 3%;
     margin-bottom: 1rem;
   }
-  .main-content-container
-    .video-content-category
-    .video-content-category-scroll {
+
+  .main-content-container .video-content-category .video-content-category-scroll {
     padding: 0 38px;
     gap: 0.7rem;
   }
+
   .main-content-container .video-content-category .arrowLeft {
     left: 10px;
   }
+
   .main-content-container .video-content-category .arrowRight {
     right: 10px;
   }
+
   .main-content-container .video-content-category .arrowLeft button,
   .main-content-container .video-content-category .arrowRight button {
     width: 34px;
     height: 34px;
   }
+
   .main-content-container .video-content-category .arrowLeft button i,
   .main-content-container .video-content-category .arrowRight button i {
     font-size: 1.1rem !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Spinner animation
+   ───────────────────────────────────────────────────────────── */
+@keyframes main-content-spinner {
+  to {
+    transform: rotate(360deg);
   }
 }

@@ -1,8 +1,9 @@
 <section class="main-content-container">
     @if (showVideo()) {
-    <app-video-item [video]="videoToPlay()" (favoriteVideosUpdated)="updateFavorite()"
-        (closeVideoClick)="showVideo.set($event)" />
+    <app-video-item [video]="videoToPlay()" (favoriteVideosUpdated)="updateFavorite()
+      " (closeVideoClick)="showVideo.set($event)" />
     }
+
     <app-main-content-header />
 
     <div class="main-video-content">
@@ -17,13 +18,28 @@
                     </button>
                 </div>
                 }
+
                 <div class="video-content-category-scroll" #favoriteScrollContainer [attr.data-category]="'favorite'">
                     @for (video of favoriteVideos(); track $index) {
-                    <div class="video-content-item" (click)="handleVideoClick(video)">
-                        <img [src]="video.image_file" alt="Video" />
+                    <div class="video-content-item" [class.is-disabled]="!isVideoReady(video)"
+                        (click)="isVideoReady(video) && handleVideoClick(video)">
+                        @if (isVideoProcessing(video)) {
+                        <div class="video-loading">
+                            <div class="spinner"></div>
+                            <span>Processing…</span>
+                        </div>
+                        } @else if (hasVideoError(video)) {
+                        <div class="video-error-thumb">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Failed</span>
+                        </div>
+                        } @else {
+                        <img [src]="video.image_file" [alt]="video.title" loading="lazy" />
+                        }
                     </div>
                     }
                 </div>
+
                 @if (visibleArrows()['favorite']) {
                 <div class="arrowRight">
                     <button (click)="scrollRight('favorite')">
@@ -46,13 +62,28 @@
                     </button>
                 </div>
                 }
+
                 <div class="video-content-category-scroll" #scrollContainer [attr.data-category]="entry.key">
                     @for (video of entry.value; track $index) {
-                    <div class="video-content-item" (click)="handleVideoClick(video)">
-                        <img [src]="video.image_file" alt="Video" />
+                    <div class="video-content-item" [class.is-disabled]="!isVideoReady(video)"
+                        (click)="isVideoReady(video) && handleVideoClick(video)">
+                        @if (isVideoProcessing(video)) {
+                        <div class="video-loading">
+                            <div class="spinner"></div>
+                            <span>Processing…</span>
+                        </div>
+                        } @else if (hasVideoError(video)) {
+                        <div class="video-error-thumb">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Failed</span>
+                        </div>
+                        } @else {
+                        <img [src]="video.image_file" [alt]="video.title" loading="lazy" />
+                        }
                     </div>
                     }
                 </div>
+
                 @if (visibleArrows()[entry.key]) {
                 <div class="arrowRight">
                     <button (click)="scrollRight($index)">

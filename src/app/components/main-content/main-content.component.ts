@@ -203,4 +203,25 @@ export class MainContentComponent implements OnInit, AfterViewInit {
   updateFavorite() {
     queueMicrotask(() => this.updateArrowVisibility());
   }
+
+  /**
+   * Returns true when video is fully ready for playback.
+   */
+  isVideoReady(video: Video): boolean {
+    return video.processing_state === 'ready' && !video.processing_error;
+  }
+
+  /**
+   * Returns true while the video is still being processed/transcoded.
+   */
+  isVideoProcessing(video: Video): boolean {
+    return video.processing_state === 'pending' || video.processing_state === 'processing';
+  }
+
+  /**
+   * Returns true if processing has failed or backend reported an error.
+   */
+  hasVideoError(video: Video): boolean {
+    return video.processing_state === 'error' || !!video.processing_error;
+  }
 }
