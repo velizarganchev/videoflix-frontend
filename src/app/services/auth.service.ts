@@ -4,7 +4,7 @@ import { Observable, of, OperatorFunction, throwError } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { User } from '../models/user.class';
-import { environment } from '../../../environments/environment.prod';
+import { environment } from '../../../environments/environment';
 
 type EmailExistsResponse = { exists: boolean };
 

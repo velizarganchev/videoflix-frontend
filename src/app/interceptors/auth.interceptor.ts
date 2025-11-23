@@ -6,11 +6,26 @@ import { AuthService } from '../services/auth.service';
 
 const REFRESH_PATH_REGEX = /\/users\/(login|refresh|logout)\/?$/i;
 
+const PUBLIC_AUTH_PATHS = [
+    '/users/login/',
+    '/users/register/',
+    '/users/email-exists/',
+    '/users/forgot-password/',
+    '/users/reset-password/',
+];
+
+/**
+ * Check if a given URL targets a public auth endpoint (no refresh/redirect).
+ */
+function isPublicAuthRequest(url: string): boolean {
+    return PUBLIC_AUTH_PATHS.some(path => url.includes(path));
+}
+
 /**
  * Global HTTP auth interceptor.
  *
  * - Always sends credentials (cookies) with each request.
- * - On 401 responses (except login/refresh/logout):
+ * - On 401 responses (except login/refresh/logout + public auth endpoints):
  *    1) Calls /users/refresh/ to get a new access token.
  *    2) Retries the original request once, marked with "X-Retry".
  * - If refresh fails:
@@ -29,14 +44,15 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
             const isHttp = err instanceof HttpErrorResponse;
             const is401 = isHttp && err.status === 401;
 
-            // Try to refresh token only once and avoid refresh/login/logout endpoints
-            if (is401 && !apiReq.headers.has('X-Retry') && !REFRESH_PATH_REGEX.test(apiReq.url)) {
+            const isRefreshLike = REFRESH_PATH_REGEX.test(apiReq.url);
+            const isPublicAuth = isPublicAuthRequest(apiReq.url);
+            const alreadyRetried = apiReq.headers.has('X-Retry');
+
+            if (is401 && !alreadyRetried && !isRefreshLike && !isPublicAuth) {
                 return auth.refresh().pipe(
-                    // On successful refresh → retry original request with X-Retry header
                     switchMap(() =>
                         next(apiReq.clone({ headers: apiReq.headers.set('X-Retry', '1') }))
                     ),
-                    // If refresh fails → hard logout and redirect to login
                     catchError(() => {
                         auth.clientLogout();
                         router.navigate(['/login'], { replaceUrl: true });
@@ -44,8 +60,6 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
                     })
                 );
             }
-
-            // Propagate all other errors unchanged
             return throwError(() => err);
         })
     );

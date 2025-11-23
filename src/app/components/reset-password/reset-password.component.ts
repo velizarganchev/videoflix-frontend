@@ -1,9 +1,15 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { of } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoadingSpinnerComponent } from "../../shared/loading-spinner/loading-spinner.component";
+import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 
 /**
  * Async validator that checks if the two password fields match.
@@ -26,7 +32,7 @@ function equalsToPassword() {
     } else {
       return of({ notEqual: true });
     }
-  }
+  };
 }
 
 /**
@@ -50,7 +56,7 @@ function equalsToPassword() {
   standalone: true,
   imports: [ReactiveFormsModule, LoadingSpinnerComponent],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
+  styleUrl: './reset-password.component.scss',
 })
 export class ResetPasswordComponent {
   /**
@@ -108,24 +114,51 @@ export class ResetPasswordComponent {
    * Async Validators:
    * - `equalsToPassword`: ensures both fields match
    */
-  resetPasswordForm = new FormGroup({
-    password: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)],
-    }),
-    confirmPassword: new FormControl('', {
-      validators: [Validators.required, Validators.minLength(6)],
-    }),
-  }, { asyncValidators: [equalsToPassword()] });
+  resetPasswordForm = new FormGroup(
+    {
+      password: new FormControl('', {
+        validators: [Validators.required, Validators.minLength(6)],
+      }),
+      confirmPassword: new FormControl('', {
+        validators: [Validators.required, Validators.minLength(6)],
+      }),
+    },
+    { asyncValidators: [equalsToPassword()] }
+  );
 
   /**
    * Lifecycle hook.
    *
-   * Extracts `uid` and `token` from the current route’s query parameters
-   * to be used in the password reset request.
+   * Extracts `uid` and `token` from the current route’s query parameters.
+   * Also fixes the case where query params contain `amp;` (when the URL
+   * was copy-pasted from the HTML email printed in the console).
    */
   ngOnInit() {
-    this.uid.set(this.activatedRoute.snapshot.queryParamMap.get('uid')!);
-    this.token.set(this.activatedRoute.snapshot.queryParamMap.get('token')!);
+    const qp = this.activatedRoute.snapshot.queryParamMap;
+
+    let uid: string | null = qp.get('uid');
+    let token: string | null = qp.get('token');
+
+    // Fallback: handle URLs that contain `amp;` in the query string
+    if ((!uid || !token) && typeof window !== 'undefined') {
+      const rawSearch = window.location.search.startsWith('?')
+        ? window.location.search.slice(1)
+        : window.location.search;
+
+      // Repair `amp;` → '' so `uid` and `token` are split correctly
+      const fixedSearch = rawSearch.replace(/amp;/g, '');
+      const params = new URLSearchParams(fixedSearch);
+
+      if (!uid) {
+        uid = params.get('uid');
+      }
+      if (!token) {
+        token = params.get('token');
+      }
+    }
+
+    this.uid.set(uid ?? '');
+    this.token.set(token ?? '');
   }
 
   /**
@@ -158,20 +191,22 @@ export class ResetPasswordComponent {
       this.isResetPasswordFormSubmitted.set(true);
       const new_password = this.resetPasswordForm.get('password')?.value;
 
-      this.authService.resetPassword(this.uid(), this.token(), new_password!).subscribe({
-        next: (response) => { },
-        error: (error) => {
-          console.error(error);
-          setTimeout(() => {
+      this.authService
+        .resetPassword(this.uid(), this.token(), new_password!)
+        .subscribe({
+          next: () => { },
+          error: (error) => {
+            console.error(error);
+            setTimeout(() => {
+              this.isResetPasswordFormSubmitted.set(false);
+              this.router.navigate(['/login']);
+            }, 4000);
+          },
+          complete: () => {
             this.isResetPasswordFormSubmitted.set(false);
             this.router.navigate(['/login']);
-          }, 4000);
-        },
-        complete: () => {
-          this.isResetPasswordFormSubmitted.set(false);
-          this.router.navigate(['/login']);
-        }
-      });
+          },
+        });
     }
   }
 }
