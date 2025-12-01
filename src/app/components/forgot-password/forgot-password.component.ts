@@ -88,7 +88,6 @@ export class ForgotPasswordComponent {
         this.email.set(email);
       },
       error: (err) => {
-        // Optional: тук можеш да ползваш централен ErrorService, ако искаш UI нотификация.
         console.error('Forgot password failed:', err);
         this.isSubmitLoading.set(false);
       },

@@ -2,11 +2,16 @@
     <div class="icon-container">
         <i class="fa-solid fa-envelope"></i>
     </div>
+
     <h2>Check Your Email</h2>
+
     <p>
-        We've sent a confirmation email to <strong>{{ email() }}</strong>. Please
-        click the link in the email to complete your registration.
+        We’ve sent a password reset link to
+        <strong>{{ email() }}</strong>.
+        Please open the email and click the button to set a new password.
     </p>
-    <p class="note">Note: Check your spam folder if you don't see the email!</p>
-    <!-- <button class="btn" (click)="resendEmail()">Resend Email</button> -->
+
+    <p class="note">
+        Note: Check your spam folder if you don't see the email!
+    </p>
 </div>

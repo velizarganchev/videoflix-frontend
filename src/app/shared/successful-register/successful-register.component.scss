@@ -24,6 +24,8 @@
             font-size: 1rem;
             color: $purple;
             animation: slideInText 0.8s ease-out;
+            word-break: break-word;
+            overflow-wrap: anywhere;
         }
 
         .signup-form-feedback-icon-container {
